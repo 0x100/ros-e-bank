@@ -21,6 +21,7 @@
 	<modules>
 		<module>model</module>
 		<module>external-payment</module>
+		<module>gateway</module>
 	</modules>
 
 	<properties>
