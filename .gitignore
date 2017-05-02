@@ -5,3 +5,9 @@
 
 build/
 target/
+
+mvnw
+mvnw.cmd
+maven-wrapper.properties
+maven-wrapper.jar
+/db
