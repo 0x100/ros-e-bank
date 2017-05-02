@@ -6,6 +6,7 @@
 build/
 target/
 
+.mvn
 mvnw
 mvnw.cmd
 maven-wrapper.properties
