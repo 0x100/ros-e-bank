@@ -1,2 +1,12 @@
+spring:
+  application:
+    name: gateway
+  cloud:
+    discovery:
+      enabled: false
+
 server:
   port: 8091
+management:
+  security:
+    enabled: false
