@@ -15,4 +15,5 @@ public class Payment {
     private String clientName;
     private String accountNumber;
     private BigDecimal transferSum;
+    private PaymentStatus status;
 }
