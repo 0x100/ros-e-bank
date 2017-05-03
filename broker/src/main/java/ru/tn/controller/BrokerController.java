@@ -3,34 +3,31 @@ package ru.tn.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.tn.model.Payment;
-import ru.tn.model.PaymentStatus;
-import ru.tn.repository.BrokerPaymentRepository;
+import ru.tn.service.BrokerService;
 
 @RestController
 @RequestMapping("/broker")
 public class BrokerController {
 
-    private final BrokerPaymentRepository paymentRepository;
+    private final BrokerService brokerService;
 
     @Autowired
-    public BrokerController(BrokerPaymentRepository paymentRepository) {
-        this.paymentRepository = paymentRepository;
+    public BrokerController(BrokerService brokerService) {
+        this.brokerService = brokerService;
     }
 
     @PostMapping("/pay")
     public Payment pay(@RequestBody Payment payment) {
-        payment.setStatus(PaymentStatus.IN_PROCESS);
-        return paymentRepository.save(payment);
+        return brokerService.pay(payment);
     }
 
     @RequestMapping("/payment")
-    public Payment getPayment(@RequestParam("id") Integer paymentId) {
-        return paymentRepository.findOne(paymentId);
+    public Payment getPayment(@RequestParam("id") Integer id) {
+        return brokerService.getPayment(id);
     }
 
     @RequestMapping("/payment/state")
-    public PaymentStatus getState(@RequestParam("id") Integer paymentId) {
-        Payment payment = paymentRepository.findOne(paymentId);
-        return payment != null ? payment.getStatus() : PaymentStatus.UNKNOWN;
+    public String getState(@RequestParam("id") Integer id) {
+        return brokerService.getState(id);
     }
 }
