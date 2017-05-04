@@ -1,13 +1,15 @@
 spring:
-    datasource:
-        url: jdbc:hsqldb:file:db/external_payments/store
-        username: sa
-        password:
-        driver-class-name: org.hsqldb.jdbc.JDBCDriver
-    jpa:
-        show-sql: true
-        hibernate:
-            ddl-auto: create
+  application:
+    name: external-payment
+  datasource:
+    url: jdbc:hsqldb:file:db/external_payments/store
+    username: sa
+    password:
+    driver-class-name: org.hsqldb.jdbc.JDBCDriver
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create
 server:
   port: 8090
 
