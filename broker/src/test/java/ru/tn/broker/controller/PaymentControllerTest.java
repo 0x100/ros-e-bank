@@ -1,6 +1,7 @@
 package ru.tn.broker.controller;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +10,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.mock.http.MockHttpOutputMessage;
+import org.springframework.restdocs.JUnitRestDocumentation;
+import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
+import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import ru.tn.broker.PaymentBrokerApplication;
 import ru.tn.broker.repository.PaymentRepository;
@@ -27,6 +32,11 @@ import java.util.List;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -35,23 +45,35 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = PaymentBrokerApplication.class)
 @WebAppConfiguration
+@Transactional
 public class PaymentControllerTest {
 
     private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
+
     private MockMvc mockMvc;
     private HttpMessageConverter mappingJackson2HttpMessageConverter;
-
     private List<Payment> payments = new ArrayList<>();
-
     @Autowired
     private PaymentRepository paymentRepository;
 
     @Autowired
-    private WebApplicationContext webApplicationContext;
+    private WebApplicationContext context;
+
+    @Rule
+    public JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation("target/generated-docs");
+
+    private RestDocumentationResultHandler resultHandler;
+
+    private final FieldDescriptor[] paymentFields = new FieldDescriptor[]{
+            fieldWithPath("id").description("ID платежа"),
+            fieldWithPath("clientName").description("Имя клиента"),
+            fieldWithPath("accountNumber").description("Номер счета"),
+            fieldWithPath("transferSum").description("Сумма платежа"),
+            fieldWithPath("status").description("Статус платежа")
+    };
 
     @Autowired
     void setConverters(HttpMessageConverter<?>[] converters) {
-
         mappingJackson2HttpMessageConverter = Arrays.stream(converters)
                 .filter(hmc -> hmc instanceof MappingJackson2HttpMessageConverter)
                 .findAny()
@@ -62,7 +84,15 @@ public class PaymentControllerTest {
 
     @Before
     public void setup() throws Exception {
-        mockMvc = webAppContextSetup(webApplicationContext).build();
+        resultHandler = document("{class-name}/{method-name}",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()));
+
+        mockMvc = webAppContextSetup(context)
+                .apply(documentationConfiguration(restDocumentation))
+                .alwaysDo(resultHandler)
+                .build();
+
         paymentRepository.deleteAll();
 
         Payment payment = new Payment();
@@ -78,7 +108,7 @@ public class PaymentControllerTest {
     public void pay() throws Exception {
         Payment payment = new Payment();
         payment.setAccountNumber("11223344");
-        payment.setClientName("1");
+        payment.setClientName("V.Pupkin");
         payment.setTransferSum(BigDecimal.valueOf(1025.55));
 
         mockMvc.perform(
@@ -102,7 +132,8 @@ public class PaymentControllerTest {
                     .andExpect(content().contentType(contentType))
                     .andExpect(jsonPath("$.id", is(payment.getId())))
                     .andExpect(jsonPath("$.accountNumber", is(payment.getAccountNumber())))
-                    .andExpect(jsonPath("$.clientName", is(payment.getClientName())));
+                    .andExpect(jsonPath("$.clientName", is(payment.getClientName())))
+                    .andDo(resultHandler.document(responseFields(paymentFields)));
     }
 
     @Test
