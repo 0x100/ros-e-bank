@@ -1,4 +1,4 @@
-package ru.tn;
+package ru.tn.broker;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
