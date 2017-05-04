@@ -1,6 +1,10 @@
 spring:
   application:
     name: external-payment
+  cloud:
+    consul:
+      discovery:
+        tags: accountNumber=0000
   datasource:
     url: jdbc:hsqldb:file:db/external_payments/store
     username: sa
