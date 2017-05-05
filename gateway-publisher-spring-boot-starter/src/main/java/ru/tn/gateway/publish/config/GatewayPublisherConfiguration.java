@@ -13,7 +13,7 @@ import ru.tn.gateway.publish.annotation.GatewayService;
 
 @Configuration
 public class GatewayPublisherConfiguration {
-    private static final String GATEWAY_SERVICE_KEY = "gateway.service";
+    private static final String GATEWAY_SERVICE_KEY = "gateway/service/";
     private final ConsulClient consulClient;
     private final String appName;
 
@@ -31,11 +31,11 @@ public class GatewayPublisherConfiguration {
                 Class<?> beanClass = ClassUtils.isCglibProxy(bean) ? bean.getClass().getSuperclass() : bean.getClass();
                 EnableGatewayPublishing annotation = beanClass.getAnnotation(EnableGatewayPublishing.class);
                 if(annotation != null) {
-                    String key = GATEWAY_SERVICE_KEY + "." + appName;
+                    String key = GATEWAY_SERVICE_KEY + appName;
                     GatewayService[] gatewayServices = annotation.value();
                     for (GatewayService gatewayService : gatewayServices) {
-                        consulClient.setKVValue(key + ".url", gatewayService.url());
-                        consulClient.setKVValue(key + ".path", gatewayService.path());
+                        consulClient.setKVValue(key + "/url", gatewayService.url());
+                        consulClient.setKVValue(key + "/path", gatewayService.path());
                     }
                 }
                 return bean;
