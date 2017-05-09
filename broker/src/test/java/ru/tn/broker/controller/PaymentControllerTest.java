@@ -49,10 +49,10 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 public class PaymentControllerTest {
 
     private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
-
     private MockMvc mockMvc;
     private HttpMessageConverter mappingJackson2HttpMessageConverter;
     private List<Payment> payments = new ArrayList<>();
+
     @Autowired
     private PaymentRepository paymentRepository;
 
@@ -60,7 +60,7 @@ public class PaymentControllerTest {
     private WebApplicationContext context;
 
     @Rule
-    public JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation("target/generated-docs");
+    public JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation("target/generated-snippets");
 
     private RestDocumentationResultHandler resultHandler;
 
@@ -84,7 +84,7 @@ public class PaymentControllerTest {
 
     @Before
     public void setup() throws Exception {
-        resultHandler = document("{class-name}/{method-name}",
+        resultHandler = document("{method-name}",
                 preprocessRequest(prettyPrint()),
                 preprocessResponse(prettyPrint()));
 
