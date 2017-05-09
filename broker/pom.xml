@@ -4,6 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <artifactId>ros-euro-bank</artifactId>
+        <groupId>ru.tn</groupId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+
     <artifactId>broker</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
@@ -11,11 +17,12 @@
     <name>broker</name>
     <description>Payment Broker</description>
 
-    <parent>
-        <artifactId>ros-euro-bank</artifactId>
-        <groupId>ru.tn</groupId>
-        <version>0.0.1-SNAPSHOT</version>
-    </parent>
+    <properties>
+        <asciidoctor-maven-plugin.version>1.5.5</asciidoctor-maven-plugin.version>
+        <spring-restdocs-asciidoctor.version>1.2.0.RELEASE</spring-restdocs-asciidoctor.version>
+        <maven-resources-plugin.version>3.0.2</maven-resources-plugin.version>
+        <spring-restdocs-mockmvc.version>1.1.2.RELEASE</spring-restdocs-mockmvc.version>
+    </properties>
 
     <dependencies>
 
@@ -40,6 +47,7 @@
         <dependency>
             <groupId>org.springframework.restdocs</groupId>
             <artifactId>spring-restdocs-mockmvc</artifactId>
+            <version>${spring-restdocs-mockmvc.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -50,6 +58,58 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.asciidoctor</groupId>
+                <artifactId>asciidoctor-maven-plugin</artifactId>
+                <version>${asciidoctor-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>generate-docs</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>process-asciidoc</goal>
+                        </goals>
+                        <configuration>
+                            <backend>html</backend>
+                            <doctype>book</doctype>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.springframework.restdocs</groupId>
+                        <artifactId>spring-restdocs-asciidoctor</artifactId>
+                        <version>${spring-restdocs-asciidoctor.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>${maven-resources-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>
+                                ${project.build.outputDirectory}/static/docs
+                            </outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>
+                                        ${project.build.directory}/generated-docs
+                                    </directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
