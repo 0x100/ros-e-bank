@@ -1,0 +1,29 @@
+= External payment service
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+
+[[overview]]
+= Назначение микросервиса
+
+Сервис внутренних платежей
+
+== Создание платежа
+==== Запрос
+
+include::{snippets}/createPayment/http-request.adoc[]
+
+==== Ответ
+
+include::{snippets}/createPayment/http-response.adoc[]
+
+== Получение всех платежей
+==== Запрос
+
+include::{snippets}/findAllPayments/http-request.adoc[]
+
+==== Ответ
+
+include::{snippets}/findAllPayments/http-response.adoc[]

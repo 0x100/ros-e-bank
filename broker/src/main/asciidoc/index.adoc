@@ -1,0 +1,27 @@
+= Payment Broker
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+
+[[overview]]
+= Назначение микросервиса
+
+Брокер проведения платежей
+
+[[resources]]
+= Ресурсы
+
+[[resources-person]]
+== Payment (платеж)
+
+include::{snippets}/get-payment/response-fields.adoc[]
+
+==== Example request
+
+include::{snippets}/get-payment/httpie-request.adoc[]
+
+==== Example response
+
+include::{snippets}/get-payment/http-response.adoc[]

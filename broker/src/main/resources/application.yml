@@ -1,0 +1,13 @@
+spring:
+    datasource:
+        url: jdbc:hsqldb:file:db/broker/store
+        username: sa
+        password:
+        driver-class-name: org.hsqldb.jdbc.JDBCDriver
+    jpa:
+        show-sql: true
+        hibernate:
+            ddl-auto: update
+server:
+  port: 8095
+

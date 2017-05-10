@@ -12,6 +12,7 @@ import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
 import org.springframework.cloud.netflix.zuul.filters.ZuulProperties;
 import org.springframework.cloud.netflix.zuul.filters.ZuulProperties.ZuulRoute;
 import org.springframework.context.annotation.Bean;
+import org.springframework.util.CollectionUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +26,7 @@ import static org.springframework.util.StringUtils.hasText;
 @EnableZuulProxy
 @SpringBootApplication
 public class GatewayApplication {
-    private static final String GATEWAY_SERVICE_KEY = "gateway.service";
+    private static final String GATEWAY_SERVICE_KEY = "gateway/service";
 
     @Autowired
 	private ConsulClient consulClient;
@@ -33,21 +34,23 @@ public class GatewayApplication {
 	@Bean
     @RefreshScope
 	public ZuulProperties zuulProperties() {
-        Response<List<String>> keysOnly = consulClient.getKVKeysOnly(GATEWAY_SERVICE_KEY);
-        Set<String> serviceNames = keysOnly.getValue().stream()
-                .map(k -> k.split("\\.")[2])
+        List<String> gwServiceKeys = consulClient.getKVKeysOnly(GATEWAY_SERVICE_KEY).getValue();
+        if(CollectionUtils.isEmpty(gwServiceKeys))
+            return new ZuulProperties();
+
+        Set<String> serviceNames = gwServiceKeys.stream()
+                .map(k -> k.split("/")[2])
                 .collect(Collectors.toSet());
 
-        if(serviceNames.isEmpty()) {
+        if(serviceNames.isEmpty())
             return new ZuulProperties();
-        }
 
         ZuulProperties zuulProperties = new ZuulProperties();
         Map<String, ZuulRoute> routes = new HashMap<>();
 
         Map<String, Service> services = consulClient.getAgentServices().getValue();
         serviceNames.forEach(serviceName -> {
-            Response<List<GetValue>> values = consulClient.getKVValues(GATEWAY_SERVICE_KEY + "." + serviceName);
+            Response<List<GetValue>> values = consulClient.getKVValues(GATEWAY_SERVICE_KEY + "/" + serviceName);
 
             String path = "", location = "";
             for (GetValue value : values.getValue()) {
