@@ -23,6 +23,7 @@
 		<module>external-payment</module>
 		<module>gateway</module>
 		<module>gateway-publisher-spring-boot-starter</module>
+		<module>zipkin-server</module>
 	</modules>
 
 	<properties>
