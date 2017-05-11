@@ -21,7 +21,9 @@
 	<modules>
 		<module>model</module>
 		<module>external-payment</module>
+        <module>internal-payment</module>
 		<module>gateway</module>
+        <module>service-discovery</module>
 		<module>broker</module>
 		<module>gateway-publisher-spring-boot-starter</module>
 	</modules>
@@ -34,11 +36,6 @@
 	</properties>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-eureka</artifactId>
-		</dependency>
-
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
