@@ -3,8 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <title>Payment UI</title>
+    <link type="text/css" href="app/assets/css/style.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
 </head>
-<body>
+<body ng-app="paymentApp">
+    <div ng-view="" class="wrapper container">
+    </div>
 
+    <script type="text/javascript" src="app/assets/lib/angular/angular.min.js"></script>
+    <script type="text/javascript" src="app/assets/lib/angular-route/angular-route.min.js"></script>
+    <script type="text/javascript" src="app/assets/lib/angular-bootstrap/ui-bootstrap.min.js"></script>
+    <script type="text/javascript" src="app/app.js"></script>
+    <script type="text/javascript" src="app/component/index/IndexController.js"></script>
 </body>
 </html>
