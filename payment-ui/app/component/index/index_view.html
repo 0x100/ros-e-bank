@@ -1,13 +1,4 @@
 <div class="row">
-    <div class="alert alert-danger alert-fixed col-sm-4" ng-show="hasError" ng-hide="!hasError">
-        <strong>{{ errorMsg }}</strong>
-    </div>
-    <div class="alert alert-success alert-fixed col-sm-4" ng-show="hasSuccess" ng-hide="!hasSuccess">
-        <strong>Успешно оплачено</strong>
-    </div>
-</div>
-
-<div class="row">
     <h2>Платежная квитанция</h2>
 </div>
 <div class="row">
@@ -32,4 +23,12 @@
 
         <button ng-click="pay()" type="submit" class="btn btn-primary">Оплатить</button>
     </form>
+</div>
+<div class="row">
+    <div class="alert alert-danger alert-fixed col-sm-4 modal-dialog" ng-show="hasError" ng-hide="!hasError">
+        <strong>{{ errorMsg }}</strong>
+    </div>
+    <div class="alert alert-success alert-fixed col-sm-4 modal-dialog" ng-show="hasSuccess" ng-hide="!hasSuccess">
+        <strong>Успешно оплачено</strong>
+    </div>
 </div>
