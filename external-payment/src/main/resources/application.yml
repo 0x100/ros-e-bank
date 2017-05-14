@@ -5,7 +5,7 @@ spring:
   cloud:
     consul:
       discovery:
-        tags: accountNumber=0000
+        tags: accountNumber=0000, GATEWAY_SERVICE
 
   datasource:
     url: jdbc:hsqldb:file:db/external_payments/store
