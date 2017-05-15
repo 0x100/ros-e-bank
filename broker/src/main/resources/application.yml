@@ -1,4 +1,6 @@
 spring:
+    application:
+        name: payment-broker
     datasource:
         url: jdbc:hsqldb:file:db/broker/store
         username: sa
@@ -11,3 +13,6 @@ spring:
 server:
   port: 8095
 
+eureka:
+  client:
+    enabled: false

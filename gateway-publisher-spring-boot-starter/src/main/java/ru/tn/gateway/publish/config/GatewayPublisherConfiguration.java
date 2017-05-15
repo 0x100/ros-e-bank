@@ -16,6 +16,8 @@ import java.util.Map;
 @Configuration
 public class GatewayPublisherConfiguration {
     private static final String GATEWAY_SERVICE_KEY = "gateway/service/";
+    private static final String GATEWAY_SERVICE_URL = "/url";
+    private static final String GATEWAY_SERVICE_PATH = "/path";
 
     @Value("${spring.application.name}")
     private String appName;
@@ -36,11 +38,14 @@ public class GatewayPublisherConfiguration {
                     String key = GATEWAY_SERVICE_KEY + appName;
                     GatewayService[] gatewayServices = annotation.value();
                     for (GatewayService gatewayService : gatewayServices) {
-                        consulClient.setKVValue(key + "/url", gatewayService.url());
-                        consulClient.setKVValue(key + "/path", gatewayService.path());
+                        consulClient.setKVValue(key + GATEWAY_SERVICE_URL, gatewayService.url());
+                        consulClient.setKVValue(key + GATEWAY_SERVICE_PATH, gatewayService.path());
                     }
                 }
         });
     }
 
+    public static String getGateWayServiceUrlKey(String serviceName) {
+        return GATEWAY_SERVICE_KEY + serviceName + GATEWAY_SERVICE_URL;
+    }
 }
