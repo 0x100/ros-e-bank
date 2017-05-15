@@ -1,5 +1,6 @@
 package org.springframework.cloud.netflix.feign;
 
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -16,15 +17,16 @@ public class FeignClientRegistrar {
         if(beans.containsKey(name)) {
             return beans.get(name);
         }
-        BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(FeignClientFactoryBean.class);
-        builder.addPropertyValue("name", name);
-        builder.addPropertyValue("url", url);
-        builder.addPropertyValue("path", path);
-        builder.addPropertyValue("type", type.getName());
-        builder.addPropertyValue("decode404", false);
+        AbstractBeanDefinition definition = BeanDefinitionBuilder.genericBeanDefinition(FeignClientFactoryBean.class)
+                .addPropertyValue("name", name)
+                .addPropertyValue("url", url)
+                .addPropertyValue("path", path)
+                .addPropertyValue("type", type.getName())
+                .addPropertyValue("decode404", false)
+                .getBeanDefinition();
 
         DefaultListableBeanFactory factory = (DefaultListableBeanFactory) context.getBeanFactory();
-        factory.registerBeanDefinition(name, builder.getBeanDefinition());
+        factory.registerBeanDefinition(name, definition);
         context.refresh(); //FIXME GenericApplicationContext does not support multiple refresh attempts: just call 'refresh' once
 
         return context.getBean(type, name);

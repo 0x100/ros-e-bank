@@ -12,11 +12,12 @@ import ru.tn.broker.client.PaymentFeignClient;
 import ru.tn.broker.exception.PaymentNotFoundException;
 import ru.tn.broker.exception.PaymentTypeNotSupportedException;
 import ru.tn.broker.repository.PaymentRepository;
-import ru.tn.gateway.publish.config.GatewayPublisherConfiguration;
 import ru.tn.model.Payment;
 
 import java.net.URI;
 import java.text.MessageFormat;
+
+import static ru.tn.gateway.publish.config.GatewayPublisherConfiguration.getGatewayServiceUrlKey;
 
 @Service
 @Transactional
@@ -67,7 +68,7 @@ public class PaymentService {
                         () -> new PaymentTypeNotSupportedException(paymentType));
 
         String serviceName = serviceInstance.getService();
-        String serviceUrlKey = GatewayPublisherConfiguration.getGateWayServiceUrlKey(serviceName);
+        String serviceUrlKey = getGatewayServiceUrlKey(serviceName);
         String path = consulClient.getKVValues(serviceUrlKey).getValue().get(0).getDecodedValue();
 
         System.out.println("serviceName = " + serviceName);
