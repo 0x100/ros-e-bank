@@ -17,9 +17,10 @@ spring:
     hibernate:
       ddl-auto: update
 
+  sleuth:
+    sampler:
+      percentage: 1.0
+
 server:
   port: 8090
 
-eureka:
-  client:
-    enabled: false
