@@ -2,7 +2,6 @@ package ru.tn.gateway;
 
 import com.ecwid.consul.v1.ConsulClient;
 import com.ecwid.consul.v1.Response;
-import com.ecwid.consul.v1.agent.model.Service;
 import com.ecwid.consul.v1.kv.model.GetValue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -20,7 +19,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static java.text.MessageFormat.format;
 import static org.springframework.util.StringUtils.hasText;
 
 @EnableZuulProxy
@@ -48,7 +46,6 @@ public class GatewayApplication {
         ZuulProperties zuulProperties = new ZuulProperties();
         Map<String, ZuulRoute> routes = new HashMap<>();
 
-        Map<String, Service> services = consulClient.getAgentServices().getValue();
         serviceNames.forEach(serviceName -> {
             Response<List<GetValue>> values = consulClient.getKVValues(GATEWAY_SERVICE_KEY + "/" + serviceName);
 
@@ -62,12 +59,10 @@ public class GatewayApplication {
             }
 
             if(hasText(path) && hasText(location)) {
-                for (Service service : services.values()) {  //  todo while hasn't server side balance
-                    if(service.getService().equals(serviceName)) {
-                        location = format("http://{0}:{1}{2}", service.getAddress(), service.getPort().toString(), location);
-                    }
-                }
-                routes.put(serviceName, new ZuulRoute(path, location));
+                ZuulRoute route = new ZuulRoute();
+                route.setPath(path);
+                route.setServiceId(serviceName);
+                routes.put(serviceName, route);
             }
         });
 
