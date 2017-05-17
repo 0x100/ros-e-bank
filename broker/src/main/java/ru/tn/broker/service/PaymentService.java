@@ -2,7 +2,7 @@ package ru.tn.broker.service;
 
 import com.ecwid.consul.v1.ConsulClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.netflix.feign.FeignClientRegistrar;
+import org.springframework.cloud.netflix.feign.DynamicFeignClient;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -24,6 +24,7 @@ import static ru.tn.gateway.publish.config.GatewayPublisherConfiguration.getGate
 public class PaymentService {
 
     private static final String ACCOUNT_TYPE_TAG_TEMPLATE = "accountNumber={0}";
+    private static final int TYPE_DIGITS_COUNT = 4;
 
     @Autowired
     private ConsulClient consulClient;
@@ -34,12 +35,14 @@ public class PaymentService {
     @Autowired
     private ConfigurableApplicationContext context;
 
-    private FeignClientRegistrar feignClientRegistrar = new FeignClientRegistrar();
+    private DynamicFeignClient dynamicFeignClient = new DynamicFeignClient();
 
     public ResponseEntity<?> pay(Payment payment) {
-        Integer id = paymentRepository.save(payment).getId();
+        routePayment(payment);
 
-        if (id != null) {
+//        Integer id = paymentRepository.save(payment).getId();
+        Integer id = 1111111;
+//        if (id != null) {
             URI location = ServletUriComponentsBuilder
                     .fromCurrentRequest()
                     .path("/{id}")
@@ -47,42 +50,36 @@ public class PaymentService {
                     .toUri();
 
             return ResponseEntity.created(location).build();
-        } else {
-            return ResponseEntity.noContent().build();
-        }
+//        } else {
+//            return ResponseEntity.noContent().build();
+//        }
     }
 
     public Payment getPayment(Integer id) {
-        testRouting();
         return paymentRepository.findById(id).orElseThrow(
                 () -> new PaymentNotFoundException(id));
     }
 
-    private void testRouting() {
-        String accountNumber = "111110000";
-        String paymentType = accountNumber.substring(accountNumber.length() - 4);
+    private void routePayment(Payment payment) {
+        String accountNumber = payment.getAccountNumber();
+        String paymentType = accountNumber.substring(accountNumber.length() - TYPE_DIGITS_COUNT);
 
-        com.ecwid.consul.v1.agent.model.Service serviceInstance = consulClient.getAgentServices().getValue().values().stream().filter(service ->
-                service.getTags().stream().anyMatch(tag -> tag.equals(MessageFormat.format(ACCOUNT_TYPE_TAG_TEMPLATE, paymentType))))
+        com.ecwid.consul.v1.agent.model.Service paymentServiceInstance = consulClient.getAgentServices().getValue().values().stream()
+                .filter(service ->
+                        service.getTags().stream().anyMatch(tag ->
+                                tag.equals(MessageFormat.format(ACCOUNT_TYPE_TAG_TEMPLATE, paymentType))))
                 .findAny().orElseThrow(
                         () -> new PaymentTypeNotSupportedException(paymentType));
 
-        String serviceName = serviceInstance.getService();
+        String serviceName = paymentServiceInstance.getService();
         String serviceUrlKey = getGatewayServiceUrlKey(serviceName);
-        String path = consulClient.getKVValues(serviceUrlKey).getValue().get(0).getDecodedValue();
+        String url = consulClient.getKVValues(serviceUrlKey).getValue().get(0).getDecodedValue();
 
-        System.out.println("serviceName = " + serviceName);
-        System.out.println("path = " + path);
-        String url = "";
-
-        Payment payment = new Payment();
-        payment.setAccountNumber(accountNumber);
-
-        PaymentFeignClient client = getPaymentFeignClient(serviceName, path, url);
+        PaymentFeignClient client = getPaymentFeignClient(url, serviceName);
         client.pay(payment);
     }
 
-    private PaymentFeignClient getPaymentFeignClient(String serviceName, String path, String url) {
-        return feignClientRegistrar.create(serviceName, url, path, PaymentFeignClient.class, context);
+    private PaymentFeignClient getPaymentFeignClient(String microServiceName, String microServiceUrl) {
+        return dynamicFeignClient.create(microServiceName, microServiceUrl, PaymentFeignClient.class, context);
     }
 }
