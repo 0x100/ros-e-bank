@@ -3,6 +3,7 @@ package ru.tn.broker.service;
 import com.ecwid.consul.v1.ConsulClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.netflix.feign.DynamicFeignClient;
+import org.springframework.cloud.netflix.feign.FeignClientHelper;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -81,7 +82,7 @@ public class PaymentService {
 
     private PaymentFeignClient getPaymentFeignClient(String microServiceName, String microServiceUrl) {
         Class<PaymentFeignClient> feignClientClass = PaymentFeignClient.class;
-        DynamicFeignClient.updateFeignClientAnnotationValue(microServiceName, feignClientClass);
+        FeignClientHelper.updateFeignClientAnnotationValue(microServiceName, feignClientClass);
         return dynamicFeignClient.create(microServiceName, microServiceUrl, feignClientClass, context);
     }
 }
