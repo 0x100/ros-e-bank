@@ -96,7 +96,7 @@ public class PaymentControllerTest {
         paymentRepository.deleteAll();
 
         Payment payment = new Payment();
-        payment.setAccountNumber("22447788");
+        payment.setAccountNumber("224477880000");
         payment.setClientName("R.Abramovich");
         payment.setTransferSum(BigDecimal.valueOf(112233445566.77));
 
@@ -107,7 +107,7 @@ public class PaymentControllerTest {
     @Test
     public void pay() throws Exception {
         Payment payment = new Payment();
-        payment.setAccountNumber("11223344");
+        payment.setAccountNumber("112233440000");
         payment.setClientName("V.Pupkin");
         payment.setTransferSum(BigDecimal.valueOf(1025.55));
 
@@ -122,7 +122,7 @@ public class PaymentControllerTest {
     public void getPayment() throws Exception {
         Payment payment = payments.get(0);
 
-        assertEquals("22447788", payment.getAccountNumber());
+        assertEquals("224477880000", payment.getAccountNumber());
         assertEquals("R.Abramovich", payment.getClientName());
         assertEquals(BigDecimal.valueOf(112233445566.77), payment.getTransferSum());
 

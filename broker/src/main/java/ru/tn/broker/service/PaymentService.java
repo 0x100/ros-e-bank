@@ -75,7 +75,7 @@ public class PaymentService {
         String serviceUrlKey = getGatewayServiceUrlKey(serviceName);
         String url = consulClient.getKVValues(serviceUrlKey).getValue().get(0).getDecodedValue();
 
-        PaymentFeignClient client = getPaymentFeignClient(url, serviceName);
+        PaymentFeignClient client = getPaymentFeignClient(serviceName, url);
         client.pay(payment);
     }
 
