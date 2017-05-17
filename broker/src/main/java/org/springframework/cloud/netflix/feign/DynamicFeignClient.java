@@ -27,10 +27,7 @@ public class DynamicFeignClient {
         if(beans.containsKey(name)) {
             return beans.get(name);
         }
-        T feignClientBean = registerFeignClientBean(microServiceName, feignClientClass, context, name);
-        updateFeignClientAnnotationValue(microServiceName, feignClientClass, feignClientBean);
-
-        return feignClientBean;
+        return registerFeignClientBean(microServiceName, feignClientClass, context, name);
     }
 
     private <T> T registerFeignClientBean(String microServiceName, Class<T> feignClientClass, ConfigurableApplicationContext context, String name) {
@@ -48,16 +45,19 @@ public class DynamicFeignClient {
         return (T) context.getBean(name);
     }
 
-    private <T> void updateFeignClientAnnotationValue(String serviceName, Class<T> feignClientClass, T feignClientBean) {
-        Class<?> feignClient = feignClientBean.getClass().getInterfaces()[0];
+    /**
+     * Updates dynamically a FeignClient annotation's value for REST Docs aggregator
+     */
+    public static <T> void updateFeignClientAnnotationValue(String microServiceName, Class<T> feignClientClass) {
+        Class<?> feignClient = feignClientClass.getInterfaces()[0];
         Annotation[] feignClientAnnotations = feignClient.getAnnotations();
         Annotation sourceAnnotation = feignClientAnnotations[0];
-        FeignClientAnnotation changedAnnotation = new FeignClientAnnotation(serviceName, sourceAnnotation);
+        FeignClientAnnotation changedAnnotation = new FeignClientAnnotation(microServiceName, sourceAnnotation);
         updateAnnotationValue(feignClientClass, changedAnnotation);
     }
 
     @SneakyThrows
-    private <T> void updateAnnotationValue(Class<T> feignClientClass, Annotation changedAnnotation) {
+    private static <T> void updateAnnotationValue(Class<T> feignClientClass, Annotation changedAnnotation) {
         Method annotationDataMethod = Class.class.getDeclaredMethod(ANNOTATION_DATA);
         annotationDataMethod.setAccessible(true);
         Object annotationData = annotationDataMethod.invoke(feignClientClass);

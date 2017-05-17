@@ -7,6 +7,7 @@ import ru.tn.broker.service.PaymentService;
 import ru.tn.model.Payment;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/broker/payment")
 public class PaymentController {
 
