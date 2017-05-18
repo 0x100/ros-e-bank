@@ -11,6 +11,7 @@ import ru.tn.gateway.publish.annotation.GatewayService;
 @EnableDiscoveryClient
 @EnableGatewayPublishing(@GatewayService(path = "/external-payments/**", url = "/external-payments/"))
 @EntityScan("ru.tn.model")
+//@EnaErrHa
 public class ExternalPaymentApplication {
 
 	public static void main(String[] args) {

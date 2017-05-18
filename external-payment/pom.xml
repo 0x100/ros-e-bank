@@ -36,6 +36,11 @@
 			<artifactId>gateway-publisher-spring-boot-starter</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>ru.tn</groupId>
+			<artifactId>error-handler-spring-boot-starter</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.hsqldb</groupId>
