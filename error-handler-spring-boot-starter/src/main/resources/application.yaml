@@ -1,0 +1,10 @@
+spring:
+  mail:
+    host:
+    port:
+    username:
+    password:
+
+mail:
+  recipients:
+    - nemykin.rv@reliab.tech
