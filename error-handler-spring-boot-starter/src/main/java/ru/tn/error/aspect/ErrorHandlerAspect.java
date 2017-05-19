@@ -20,7 +20,7 @@ public class ErrorHandlerAspect {
     @Autowired
     private Tracer tracer;
 
-    @AfterThrowing(pointcut = "execution(public tu.tn.*.*(..))", argNames = "ex")
+    @AfterThrowing(pointcut = "execution(public ru.tn.*.*(..))", argNames = "ex")
     public void handleError(Throwable ex) {
         log.error("Error has occurred", ex);
         executorService.submit(() -> {
