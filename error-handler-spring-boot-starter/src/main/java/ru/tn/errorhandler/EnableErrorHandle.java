@@ -1,11 +1,14 @@
-package ru.tn.error;
+package ru.tn.errorhandler;
 
 import org.springframework.context.annotation.Import;
-import ru.tn.error.config.ErrorHandlerConfiguration;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
+
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Import(ErrorHandlerConfiguration.class)
 public @interface EnableErrorHandle {

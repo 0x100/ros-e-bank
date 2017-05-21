@@ -1,0 +1,8 @@
+#spring:
+#  mail:
+#    host:
+#    port:
+#    username:
+#    password:
+
+mailRecipients: nemykin.rv@reliab.tech, snimshcikov.dv@reliab.tech
