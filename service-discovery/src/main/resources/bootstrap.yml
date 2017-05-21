@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: service-discovery
+  cloud:
+    discovery:
+      enabled: false
+    consul:
+      config:
+        name: ""
+        prefix: gateway
+        default-context: service
+
+server:
+  port: 8094
+
+graphviz.dot.path: /usr/bin/dot

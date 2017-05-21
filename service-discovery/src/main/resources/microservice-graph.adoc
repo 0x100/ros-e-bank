@@ -1,0 +1,19 @@
+
+[graphviz, microservices-graph, svg]
+---- 
+digraph microservices { 
+    rankdir=LR;
+    node [shape = record];
+    subgraph cluster_microservices {
+        label = "Контур микросервисов";
+        color = gray;
+        style = dashed;
+
+
+include::serviceDescriptions
+
+    }
+
+include::serviceDepends
+
+}
