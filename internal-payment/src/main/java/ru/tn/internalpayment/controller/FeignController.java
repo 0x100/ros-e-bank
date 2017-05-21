@@ -1,4 +1,4 @@
-package ru.tn.internal.controller;
+package ru.tn.internalpayment.controller;
 
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -1,10 +1,10 @@
-package ru.tn.internal.scheduled;
+package ru.tn.internalpayment.scheduled;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import ru.tn.internal.controller.FeignController;
+import ru.tn.internalpayment.controller.FeignController;
 import ru.tn.model.Payment;
 import ru.tn.model.PaymentStatus;
 

@@ -3,12 +3,16 @@ package ru.tn.discovery.service;
 import com.ecwid.consul.v1.ConsulClient;
 import com.ecwid.consul.v1.agent.model.Service;
 import com.ecwid.consul.v1.kv.model.GetValue;
+import com.google.common.io.Resources;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.io.Resource;
 import ru.tn.discovery.model.ServiceDescription;
 import rx.Observable;
 
@@ -25,6 +29,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static com.google.common.base.Charsets.UTF_8;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -41,6 +46,9 @@ public class DiscoveryDependencyService {
     public AsciiDocConverterService adocConverterService;
     @Autowired
     private ConsulClient consulClient;
+
+    @Value("classpath:microservice-graph.adoc")
+    private Resource microserviceTemplate;
 
     /**
      * Вызывается при изменении пути gateway/service в KV Consul.
@@ -140,35 +148,24 @@ public class DiscoveryDependencyService {
                 .collect(joining("\n"));
     }
 
+    @SneakyThrows
     public void buildGraphAdoc(List<ServiceDescription> binaryLink) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("= Граф зависимости сервисов \n");
-        sb.append("\n");
-        sb.append("[graphviz, microservices-graph, svg] \n");
-        sb.append("---- \n");
-        sb.append("digraph microservices { \n");
-        sb.append("rankdir=LR; \n");
-        sb.append("node [shape = record]; \n");
-        sb.append("subgraph cluster_microservices { \n");
-        sb.append("label = \"Контур микросервисов\"; \n");
-        sb.append("color = gray; \n");
-        sb.append("style = dashed; \n");
+        StringBuilder serviceDescriptions = new StringBuilder();
+        StringBuilder serviceDepends = new StringBuilder();
+        String graphTemplate = Resources.toString(microserviceTemplate.getURL(), UTF_8);
 
         binaryLink.forEach(l ->
-                sb.append(
-                        makeGraphVertex(l.getName(), l.getBaseUrls())));
-        sb.append("\n } \n \n");
+                serviceDescriptions.append(makeGraphVertex(l.getName(), l.getBaseUrls())));
 
         Observable.from(binaryLink).distinct(ServiceDescription::getName)
                 .filter(l -> l.getDependencies() != null)
-                .forEach(l -> sb.append(
+                .forEach(l -> serviceDepends.append(
                         makeUnaryLink(l.getName(), l.getDependencies())));
 
-//            "someService";
-        sb.append("\n }\n");
-
+        graphTemplate = graphTemplate.replace("include::serviceDescriptions", serviceDescriptions);
+        graphTemplate = graphTemplate.replace("include::serviceDepends", serviceDepends);
         try {
-            File resultAdoc = saveFile(sb.toString(), "microservice-graph", ".adoc");
+            File resultAdoc = saveFile(graphTemplate, "microservice-graph", ".adoc");
             convertToSVG(resultAdoc);
         } catch (Exception e) {
             log.error(e.getMessage(), e);

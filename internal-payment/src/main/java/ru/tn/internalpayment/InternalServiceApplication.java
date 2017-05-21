@@ -1,4 +1,4 @@
-package ru.tn.internal;
+package ru.tn.internalpayment;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
