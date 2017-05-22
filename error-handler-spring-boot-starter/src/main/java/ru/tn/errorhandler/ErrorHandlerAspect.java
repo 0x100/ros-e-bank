@@ -53,12 +53,12 @@ public class ErrorHandlerAspect {
 
     @AfterThrowing(pointcut = "execution(* ru.tn..*.*(..))", throwing = "ex")
     public void handleError(Throwable ex) {
-        log.error("Error has occurred", ex);
         Span span = tracer.getCurrentSpan();
         executorService.submit(() -> {
             try {
                 SimpleMailMessage message = new SimpleMailMessage();
                 message.setTo(recipients);
+                message.setFrom("microservice.test@reliab.tech");
                 message.setSubject("Service error");
                 message.setSentDate(new Date());
 
@@ -81,7 +81,7 @@ public class ErrorHandlerAspect {
             List<ServiceInstance> instances = discoveryClient.getInstances(ZIPKIN_SERVICE_ID);
             if (!instances.isEmpty()) {
                 ServiceInstance zipkin = instances.get(0);
-                return format("http://{0}:{1}/traces/{2}", zipkin.getHost(), String.valueOf(zipkin.getPort()), String.valueOf(span.getTraceId()));
+                return format("http://{0}:{1}/traces/{2}", zipkin.getHost(), String.valueOf(zipkin.getPort()), span.traceIdString());
             }
         }
         return "";
