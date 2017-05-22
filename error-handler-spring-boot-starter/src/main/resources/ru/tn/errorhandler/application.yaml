@@ -1,0 +1,13 @@
+#spring:
+#  mail:
+#    host: mail.reliab.tech
+#    port: 25
+#    username: microservice.test@reliab.tech
+#    password: aPSZOwhPaPSZOwhP
+
+spring.mail.host=mail.reliab.tech
+spring.mail.port=25
+spring.mail.username=microservice.test@reliab.tech
+spring.mail.password=aPSZOwhPaPSZOwhP
+
+mailRecipients: nemykin.rv@reliab.tech, snimshchikov.dn@reliab.tech

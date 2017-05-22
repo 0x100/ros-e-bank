@@ -1,7 +1,6 @@
 server:
   port: 9411
 
-#spring:
-#  sleuth:
-#    sampler:
-#      percentage: 1.0
+spring:
+  application:
+    name: zipkin-server

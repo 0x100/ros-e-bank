@@ -1,0 +1,6 @@
+Service call failed
+See trace in Zipkin {0}
+
+Call stack trace
+{1}
+ 
