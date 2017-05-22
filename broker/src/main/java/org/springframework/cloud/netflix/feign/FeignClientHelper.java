@@ -29,11 +29,11 @@ public class FeignClientHelper {
     @SneakyThrows
     public static <T> void setFeignClientAnnotations(T feignClient, String microServiceName, String microServiceUrl) {
         Class<?> feignClientClass = feignClient.getClass();
-        setClassAnnotation(feignClient, microServiceName);
+        setClassAnnotation(microServiceName, feignClient);
         setMethodsAnnotations(microServiceUrl, feignClientClass);
     }
 
-    private static <T> void setClassAnnotation(T feignClient, String microServiceName) {
+    private static <T> void setClassAnnotation(String microServiceName, T feignClient) {
         FeignClientAnnotation classAnnotation = new FeignClientAnnotation(microServiceName);
         addFeignClientAnnotation(feignClient, classAnnotation);
     }
