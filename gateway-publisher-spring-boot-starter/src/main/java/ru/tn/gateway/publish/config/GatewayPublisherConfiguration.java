@@ -68,4 +68,8 @@ public class GatewayPublisherConfiguration {
             }
         }
     }
+
+    public static String getGatewayServiceUrlKey(String serviceName) {
+        return GATEWAY_SERVICE_KEY + serviceName + GATEWAY_SERVICE_URL;
+    }
 }
