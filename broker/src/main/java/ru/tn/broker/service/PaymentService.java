@@ -82,7 +82,8 @@ public class PaymentService {
 
     private PaymentFeignClient getPaymentFeignClient(String microServiceName, String microServiceUrl) {
         Class<PaymentFeignClient> feignClientClass = PaymentFeignClient.class;
-        FeignClientHelper.updateFeignClientAnnotationValue(microServiceName, feignClientClass);
-        return dynamicFeignClient.create(microServiceName, microServiceUrl, feignClientClass, context);
+        PaymentFeignClient feignClient = dynamicFeignClient.create(microServiceName, microServiceUrl, feignClientClass, context);
+        FeignClientHelper.setFeignClientAnnotations(feignClient, microServiceName, microServiceUrl);
+        return feignClient;
     }
 }
