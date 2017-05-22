@@ -8,11 +8,11 @@ import java.lang.annotation.Annotation;
 public class RequestMappingAnnotation implements RequestMapping {
 
     private String url;
-    private Annotation annotation;
+    private RequestMethod httpMethod;
 
-    RequestMappingAnnotation(String url, Annotation annotation) {
+    RequestMappingAnnotation(String url, RequestMethod httpMethod) {
         this.url = url;
-        this.annotation = annotation;
+        this.httpMethod = httpMethod;
     }
 
     @Override
@@ -22,17 +22,17 @@ public class RequestMappingAnnotation implements RequestMapping {
 
     @Override
     public String[] value() {
-        return new String[]{url};
+        return path();
     }
 
     @Override
     public String[] path() {
-        return new String[0];
+        return new String[]{url};
     }
 
     @Override
     public RequestMethod[] method() {
-        return ((RequestMapping) annotation).method();
+        return new RequestMethod[]{httpMethod};
     }
 
     @Override
@@ -57,6 +57,6 @@ public class RequestMappingAnnotation implements RequestMapping {
 
     @Override
     public Class<? extends Annotation> annotationType() {
-        return annotation.annotationType();
+        return RequestMapping.class;
     }
 }
