@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import ru.tn.errorhandler.EnableErrorHandle;
 import ru.tn.gateway.publish.annotation.EnableGatewayPublishing;
 import ru.tn.gateway.publish.annotation.GatewayService;
 
@@ -11,6 +12,7 @@ import ru.tn.gateway.publish.annotation.GatewayService;
 @EnableDiscoveryClient
 @EnableGatewayPublishing(@GatewayService(path = "/external-payments/**", url = "/external-payments/"))
 @EntityScan("ru.tn.model")
+@EnableErrorHandle
 public class ExternalPaymentApplication {
 
 	public static void main(String[] args) {

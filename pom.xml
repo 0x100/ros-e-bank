@@ -27,6 +27,7 @@
 		<module>broker</module>
 		<module>gateway-publisher-spring-boot-starter</module>
 		<module>zipkin-server</module>
+		<module>error-handler-spring-boot-starter</module>
 		<module>payment-ui</module>
 	</modules>
 
