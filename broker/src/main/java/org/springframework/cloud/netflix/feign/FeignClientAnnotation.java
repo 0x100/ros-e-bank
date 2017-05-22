@@ -5,11 +5,9 @@ import java.lang.annotation.Annotation;
 public class FeignClientAnnotation implements FeignClient {
 
     private String name;
-    private Annotation sourceAnnotation;
 
-    FeignClientAnnotation(String name, Annotation sourceAnnotation) {
+    FeignClientAnnotation(String name) {
         this.name = name;
-        this.sourceAnnotation = sourceAnnotation;
     }
 
     @Override
@@ -69,6 +67,6 @@ public class FeignClientAnnotation implements FeignClient {
 
     @Override
     public Class<? extends Annotation> annotationType() {
-        return sourceAnnotation.annotationType();
+        return FeignClient.class;
     }
 }
