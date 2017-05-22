@@ -5,10 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Executable;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +18,7 @@ public class FeignClientHelper {
     private static final String ANNOTATIONS = "annotations";
     private static final String DECLARED_ANNOTATIONS = "declaredAnnotations";
     private static final String MODIFIERS = "modifiers";
+    private static final String PRIVATE_GET_DECLARED_METHODS_METHOD_NAME = "privateGetDeclaredMethods";
 
     private static final String GET = "get";
     private static final String UPDATE = "update";
@@ -31,13 +29,20 @@ public class FeignClientHelper {
     @SneakyThrows
     public static <T> void setFeignClientAnnotations(T feignClient, String microServiceName, String microServiceUrl) {
         Class<?> feignClientClass = feignClient.getClass();
-        FeignClientAnnotation annotation = new FeignClientAnnotation(microServiceName);
-        addFeignClientAnnotation(feignClient, annotation);
+        setClassAnnotation(feignClient, microServiceName);
+        setMethodsAnnotations(microServiceUrl, feignClientClass);
+    }
 
-        Method privateDeclaredMethodsMethod = Class.class.getDeclaredMethod("privateGetDeclaredMethods", boolean.class);
-        privateDeclaredMethodsMethod.setAccessible(true);
+    private static <T> void setClassAnnotation(T feignClient, String microServiceName) {
+        FeignClientAnnotation classAnnotation = new FeignClientAnnotation(microServiceName);
+        addFeignClientAnnotation(feignClient, classAnnotation);
+    }
 
-        Method[] declaredMethods = (Method[]) privateDeclaredMethodsMethod.invoke(feignClientClass, false);
+    private static void setMethodsAnnotations(String microServiceUrl, Class<?> feignClientClass) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        Method privateGetDeclaredMethodsMethod = Class.class.getDeclaredMethod(PRIVATE_GET_DECLARED_METHODS_METHOD_NAME, boolean.class);
+        privateGetDeclaredMethodsMethod.setAccessible(true);
+
+        Method[] declaredMethods = (Method[]) privateGetDeclaredMethodsMethod.invoke(feignClientClass, false);
         for (Method method : declaredMethods) {
 
             String methodName = method.getName();
@@ -45,8 +50,8 @@ public class FeignClientHelper {
                 continue;
 
             RequestMethod httpMethod = getHttpMethod(methodName);
-            RequestMappingAnnotation changedMethodAnnotation = new RequestMappingAnnotation(microServiceUrl, httpMethod);
-            addRequestMappingMethodAnnotation(method, changedMethodAnnotation);
+            RequestMappingAnnotation methodAnnotation = new RequestMappingAnnotation(microServiceUrl, httpMethod);
+            addRequestMappingMethodAnnotation(method, methodAnnotation);
         }
     }
 
