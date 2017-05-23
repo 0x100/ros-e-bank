@@ -1,4 +1,4 @@
-package org.springframework.cloud.netflix.feign;
+package ru.tn.broker.annotation;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -10,7 +10,7 @@ public class RequestMappingAnnotation implements RequestMapping {
     private String url;
     private RequestMethod httpMethod;
 
-    RequestMappingAnnotation(String url, RequestMethod httpMethod) {
+    public RequestMappingAnnotation(String url, RequestMethod httpMethod) {
         this.url = url;
         this.httpMethod = httpMethod;
     }

@@ -1,4 +1,6 @@
-package org.springframework.cloud.netflix.feign;
+package ru.tn.broker.annotation;
+
+import org.springframework.cloud.netflix.feign.FeignClient;
 
 import java.lang.annotation.Annotation;
 
@@ -6,7 +8,7 @@ public class FeignClientAnnotation implements FeignClient {
 
     private String name;
 
-    FeignClientAnnotation(String name) {
+    public FeignClientAnnotation(String name) {
         this.name = name;
     }
 
