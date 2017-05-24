@@ -52,7 +52,7 @@ public class PaymentServicesActuator {
                                 value.substring(value.length() - paymentTypeDigitsCount)
                         )
                         .findFirst();
-                if (paymentType.isPresent()) {
+                if (paymentType.isPresent() && !paymentServicesClients.containsKey(paymentType.get())) {
                     String serviceName = service.getService();
                     String serviceUrlKey = getGatewayServiceUrlKey(serviceName);
                     String url = consulClient.getKVValues(serviceUrlKey).getValue().get(0).getDecodedValue();
