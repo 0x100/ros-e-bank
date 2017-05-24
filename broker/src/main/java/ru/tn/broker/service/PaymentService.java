@@ -37,7 +37,8 @@ public class PaymentService {
             ResponseEntity<Payment> result = client.pay(payment);
 
             if(result.getStatusCode() == HttpStatus.CREATED) {
-                payment = result.getBody();
+                payment = paymentRepository.save(payment);
+
                 URI location = ServletUriComponentsBuilder
                         .fromCurrentRequest()
                         .path("/{id}")
