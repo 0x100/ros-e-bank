@@ -18,10 +18,9 @@ import java.util.Map;
 public class FeignClientHelper {
 
     private static final String ANNOTATION_DATA = "annotationData";
-    private static final String ANNOTATIONS = "annotations";
     private static final String DECLARED_ANNOTATIONS = "declaredAnnotations";
     private static final String MODIFIERS = "modifiers";
-    private static final String PRIVATE_GET_DECLARED_METHODS_METHOD_NAME = "privateGetDeclaredMethods";
+    private static final String PRIVATE_GET_PUBLIC_METHODS = "privateGetPublicMethods";
 
     private static final String GET = "get";
     private static final String UPDATE = "update";
@@ -40,10 +39,10 @@ public class FeignClientHelper {
 
     @SneakyThrows
     private static <T> void setMethodsAnnotations(String serviceUrl, Class<T> feignClientClass) {
-        Method privateMethod = Class.class.getDeclaredMethod(PRIVATE_GET_DECLARED_METHODS_METHOD_NAME, boolean.class);
+        Method privateMethod = Class.class.getDeclaredMethod(PRIVATE_GET_PUBLIC_METHODS);
         privateMethod.setAccessible(true);
 
-        Method[] methods = (Method[]) privateMethod.invoke(feignClientClass, false);
+        Method[] methods = (Method[]) privateMethod.invoke(feignClientClass);
         for (Method method : methods) {
             addRequestMappingMethodAnnotation(method, serviceUrl);
         }

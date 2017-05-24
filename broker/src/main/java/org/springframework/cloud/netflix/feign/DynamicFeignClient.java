@@ -5,15 +5,12 @@ import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ConfigurableApplicationContext;
-import ru.tn.broker.utils.ClassGenerator;
 
 import java.text.MessageFormat;
 import java.util.Map;
 
 @SuppressWarnings("unchecked")
 public class DynamicFeignClient {
-
-    private final ClassGenerator proxyGenerator = new ClassGenerator();
 
     @SneakyThrows
     public <T> T create(String microServiceName, String serviceUrl, Class<T> feignClientClass, ConfigurableApplicationContext context) {
@@ -23,7 +20,6 @@ public class DynamicFeignClient {
         if (beans.containsKey(name)) {
             return beans.get(name);
         }
-//        Class proxyClass = proxyGenerator.getProxyClass(name, feignClientClass);
         FeignClientHelper.setFeignClientAnnotations(microServiceName, serviceUrl, feignClientClass);
         AbstractBeanDefinition definition = BeanDefinitionBuilder.genericBeanDefinition(FeignClientFactoryBean.class)
                 .addPropertyValue("name", microServiceName)

@@ -3,7 +3,6 @@ package ru.tn.broker.service;
 import com.ecwid.consul.v1.ConsulClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.netflix.feign.DynamicFeignClient;
-import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.cloud.netflix.feign.FeignClientHelper;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +17,6 @@ import ru.tn.model.Payment;
 
 import java.net.URI;
 import java.text.MessageFormat;
-import java.util.Map;
 
 import static ru.tn.gateway.publish.config.GatewayPublisherConfiguration.getGatewayServiceUrlKey;
 
