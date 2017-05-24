@@ -8,9 +8,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import ru.tn.broker.client.PaymentFeignClient;
-import ru.tn.broker.exception.PaymentTypeNotSupportedException;
 
-import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -31,15 +29,10 @@ public class PaymentServicesActuator {
     @Autowired
     private ConfigurableApplicationContext context;
 
-    private Map<String, String> paymentServicesClients = new HashMap<>();
-    private DynamicFeignClient dynamicFeignClient = new DynamicFeignClient();
+    private Map<String, PaymentFeignClient> paymentServicesClients = new HashMap<>();
 
     public PaymentFeignClient getPaymentClient(String paymentType) {
-        String beanName = paymentServicesClients.get(paymentType);
-        if(context.containsBean(beanName)) {
-            return (PaymentFeignClient) context.getBean(beanName);
-        }
-        return null;
+        return paymentServicesClients.get(paymentType);
     }
 
     @Scheduled(fixedDelay = CHECK_INTERVAL)
@@ -49,21 +42,22 @@ public class PaymentServicesActuator {
                         .filter(tag ->
                                 tag.matches("\\w+=\\d{" + paymentTypeDigitsCount + "}"))
                         .map(value ->
-                                value.substring(value.length() - paymentTypeDigitsCount)
-                        )
+                                value.substring(value.length() - paymentTypeDigitsCount))
                         .findFirst();
                 if (paymentType.isPresent() && !paymentServicesClients.containsKey(paymentType.get())) {
                     String serviceName = service.getService();
                     String serviceUrlKey = getGatewayServiceUrlKey(serviceName);
                     String url = consulClient.getKVValues(serviceUrlKey).getValue().get(0).getDecodedValue();
 
-                    paymentServicesClients.put(paymentType.get(), getPaymentFeignClientBeanName(serviceName, url));
+                    PaymentFeignClient client = generatePaymentFeignClient(serviceName, url);
+                    paymentServicesClients.put(paymentType.get(), client);
                 }
             }
         );
     }
 
-    private String getPaymentFeignClientBeanName(String microServiceName, String methodUrl) {
-        return dynamicFeignClient.create(microServiceName, methodUrl, PaymentFeignClient.class, context);
+    private PaymentFeignClient generatePaymentFeignClient(String microServiceName, String methodUrl) {
+        DynamicFeignClient clientBuilder = new DynamicFeignClient();
+        return clientBuilder.create(microServiceName, methodUrl, PaymentFeignClient.class, context);
     }
 }

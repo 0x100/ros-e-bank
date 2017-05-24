@@ -5,6 +5,7 @@ import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ConfigurableApplicationContext;
+import ru.tn.broker.utils.ClassGenerator;
 
 import java.text.MessageFormat;
 import java.util.Map;
@@ -13,25 +14,29 @@ import java.util.Map;
 public class DynamicFeignClient {
 
     @SneakyThrows
-    public <T> String create(String microServiceName, String serviceUrl, Class<T> feignClientClass, ConfigurableApplicationContext context) {
+    public <T> T create(String microServiceName, String serviceUrl, Class<T> feignClientClass, ConfigurableApplicationContext context) {
         String beanName = MessageFormat.format("{0}-feign-client", microServiceName);
 
         Map<String, T> beanNames = context.getBeansOfType(feignClientClass);
         if (beanNames.containsKey(beanName)) {
-            return beanName;
+            return (T) context.getBean(beanName);
         }
-        FeignClientHelper.setFeignClientAnnotations(microServiceName, serviceUrl, feignClientClass);
+        Class newFeignClientInterface = ClassGenerator.getNewFeignClientInterface(beanName, feignClientClass);
+        FeignClientHelper.setFeignClientAnnotations(microServiceName, serviceUrl, newFeignClientInterface);
         AbstractBeanDefinition definition = BeanDefinitionBuilder.genericBeanDefinition(FeignClientFactoryBean.class)
                 .addPropertyValue("name", microServiceName)
                 .addPropertyValue("url", "")
                 .addPropertyValue("path", "")
-                .addPropertyValue("type", feignClientClass.getName())
+                .addPropertyValue("type", newFeignClientInterface.getName())
                 .addPropertyValue("decode404", false)
                 .getBeanDefinition();
 
         BeanDefinitionRegistry registry = (BeanDefinitionRegistry) context.getBeanFactory();
         registry.registerBeanDefinition(beanName, definition);
 
-        return beanName;
+        T client = (T) context.getBean(beanName);
+        FeignClientHelper.setFeignClientAnnotations(microServiceName, serviceUrl, client.getClass());
+
+        return client;
     }
 }

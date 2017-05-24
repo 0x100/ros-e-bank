@@ -107,9 +107,11 @@ public class PaymentControllerTest {
     @Test
     public void pay() throws Exception {
         Payment payment = new Payment();
-        payment.setAccountNumber("112233440000");
+        payment.setAccountNumber("112233449999");
         payment.setClientName("V.Pupkin");
         payment.setTransferSum(BigDecimal.valueOf(1025.55));
+
+        Thread.sleep(3000);
 
         mockMvc.perform(
                 post("/broker/payment")
