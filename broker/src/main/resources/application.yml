@@ -10,8 +10,10 @@ spring:
         show-sql: true
         hibernate:
             ddl-auto: update
-#    sleuth:
-#        sampler:
-#            percentage: 1.0
+    sleuth:
+        sampler:
+            percentage: 1.0
 server:
-  port: 8095
+    port: 8095
+
+paymentTypeDigitsCount: 4

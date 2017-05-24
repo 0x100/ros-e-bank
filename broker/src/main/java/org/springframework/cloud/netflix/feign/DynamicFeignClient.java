@@ -13,12 +13,12 @@ import java.util.Map;
 public class DynamicFeignClient {
 
     @SneakyThrows
-    public <T> T create(String microServiceName, String serviceUrl, Class<T> feignClientClass, ConfigurableApplicationContext context) {
-        String name = MessageFormat.format("{0}-feign-client", microServiceName);
+    public <T> String create(String microServiceName, String serviceUrl, Class<T> feignClientClass, ConfigurableApplicationContext context) {
+        String beanName = MessageFormat.format("{0}-feign-client", microServiceName);
 
-        Map<String, T> beans = context.getBeansOfType(feignClientClass);
-        if (beans.containsKey(name)) {
-            return beans.get(name);
+        Map<String, T> beanNames = context.getBeansOfType(feignClientClass);
+        if (beanNames.containsKey(beanName)) {
+            return beanName;
         }
         FeignClientHelper.setFeignClientAnnotations(microServiceName, serviceUrl, feignClientClass);
         AbstractBeanDefinition definition = BeanDefinitionBuilder.genericBeanDefinition(FeignClientFactoryBean.class)
@@ -30,8 +30,8 @@ public class DynamicFeignClient {
                 .getBeanDefinition();
 
         BeanDefinitionRegistry registry = (BeanDefinitionRegistry) context.getBeanFactory();
-        registry.registerBeanDefinition(name, definition);
+        registry.registerBeanDefinition(beanName, definition);
 
-        return (T) context.getBean(name);
+        return beanName;
     }
 }
