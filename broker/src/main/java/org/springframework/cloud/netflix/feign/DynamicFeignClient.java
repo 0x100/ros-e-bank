@@ -21,8 +21,9 @@ public class DynamicFeignClient {
         if (beanNames.containsKey(beanName)) {
             return (T) context.getBean(beanName);
         }
-        Class newFeignClientInterface = ClassGenerator.getNewFeignClientInterface(beanName, feignClientClass);
+        Class newFeignClientInterface = ClassGenerator.newFeignClientInterface(beanName, feignClientClass);
         FeignClientHelper.setFeignClientAnnotations(microServiceName, serviceUrl, newFeignClientInterface);
+
         AbstractBeanDefinition definition = BeanDefinitionBuilder.genericBeanDefinition(FeignClientFactoryBean.class)
                 .addPropertyValue("name", microServiceName)
                 .addPropertyValue("url", "")

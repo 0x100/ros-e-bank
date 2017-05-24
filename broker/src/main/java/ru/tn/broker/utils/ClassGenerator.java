@@ -8,7 +8,7 @@ import lombok.SneakyThrows;
 public class ClassGenerator {
 
     @SneakyThrows
-    public static <T> Class getNewFeignClientInterface(String name, Class<T> oldFeignClientInterface) {
+    public static <T> Class newFeignClientInterface(String name, Class<T> oldFeignClientInterface) {
         ClassPool classPool = ClassPool.getDefault();
         CtClass paymentFeignClient = classPool.get(oldFeignClientInterface.getName());
         paymentFeignClient.defrost();
