@@ -7,6 +7,6 @@ import ru.tn.model.Payment;
 
 public interface PaymentFeignClient {
 
-    @RequestMapping
+    @RequestMapping(value = "/external-payments", method = RequestMethod.POST)
     ResponseEntity<Payment> pay(Payment payment);
 }

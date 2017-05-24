@@ -54,19 +54,19 @@ public class GatewayPublisherConfiguration {
 
     @SneakyThrows
     private void fillDependsServices() {
-        Map<String, Object> beans = ctx.getBeansWithAnnotation(FeignClient.class);
-        String key = GATEWAY_SERVICE_KEY + appName + "/dependency";
-        beans.values().forEach(bean -> {
-            Class<?> beanClass = bean.getClass();
-            String serviceId = beanClass.getAnnotation(FeignClient.class).value();
-            Method[] declaredMethods = beanClass.getDeclaredMethods();
-            for (Method method : declaredMethods) {
-                RequestMapping requestMapping = method.getAnnotation(RequestMapping.class);
-                if (requestMapping != null) {
-                    consulClient.setKVValue(key, serviceId + "|" + requestMapping.value()[0]);
-                }
-            }
-        });
+//        Map<String, Object> beans = ctx.getBeansWithAnnotation(FeignClient.class);
+//        String key = GATEWAY_SERVICE_KEY + appName + "/dependency";
+//        beans.values().forEach(bean -> {
+//            Class<?> beanClass = bean.getClass();
+//            String serviceId = beanClass.getAnnotation(FeignClient.class).value();
+//            Method[] declaredMethods = beanClass.getDeclaredMethods();
+//            for (Method method : declaredMethods) {
+//                RequestMapping requestMapping = method.getAnnotation(RequestMapping.class);
+//                if (requestMapping != null) {
+//                    consulClient.setKVValue(key, serviceId + "|" + requestMapping.value()[0]);
+//                }
+//            }
+//        });
     }
 
     public static String getGatewayServiceUrlKey(String serviceName) {
