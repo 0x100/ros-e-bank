@@ -5,7 +5,7 @@ import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ConfigurableApplicationContext;
-import ru.tn.broker.utils.ClassGenerator;
+import ru.tn.broker.utils.FeignClientInterfaceGenerator;
 
 import java.text.MessageFormat;
 import java.util.Map;
@@ -21,9 +21,7 @@ public class DynamicFeignClient {
         if (beanNames.containsKey(beanName)) {
             return (T) context.getBean(beanName);
         }
-        Class newFeignClientInterface = ClassGenerator.newFeignClientInterface(beanName, feignClientClass);
-        FeignClientHelper.setFeignClientAnnotations(microServiceName, serviceUrl, newFeignClientInterface);
-
+        Class newFeignClientInterface = FeignClientInterfaceGenerator.newFeignClientInterface(beanName, feignClientClass, microServiceName, serviceUrl);
         AbstractBeanDefinition definition = BeanDefinitionBuilder.genericBeanDefinition(FeignClientFactoryBean.class)
                 .addPropertyValue("name", microServiceName)
                 .addPropertyValue("url", "")
@@ -35,9 +33,6 @@ public class DynamicFeignClient {
         BeanDefinitionRegistry registry = (BeanDefinitionRegistry) context.getBeanFactory();
         registry.registerBeanDefinition(beanName, definition);
 
-        T client = (T) context.getBean(beanName);
-        FeignClientHelper.setFeignClientAnnotations(microServiceName, serviceUrl, client.getClass());
-
-        return client;
+        return (T) context.getBean(beanName);
     }
 }
