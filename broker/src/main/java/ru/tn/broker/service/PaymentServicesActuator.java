@@ -36,7 +36,7 @@ public class PaymentServicesActuator {
     }
 
     @Scheduled(fixedDelay = CHECK_INTERVAL)
-    private void checkServices() {
+    public void checkServices() {
         consulClient.getAgentServices().getValue().values().forEach(service -> {
                 Optional<String> paymentType = service.getTags().stream()
                         .filter(tag ->
