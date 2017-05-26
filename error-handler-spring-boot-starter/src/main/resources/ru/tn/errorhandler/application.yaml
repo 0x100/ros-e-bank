@@ -11,3 +11,5 @@ spring.mail.username=microservice.test@reliab.tech
 spring.mail.password=aPSZOwhPaPSZOwhP
 
 mailRecipients: nemykin.rv@reliab.tech, snimshchikov.dn@reliab.tech, lysenko.iv@reliab.tech
+
+management.health.mail.enabled=false
