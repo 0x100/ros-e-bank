@@ -8,7 +8,7 @@ paymentApp.controller('IndexController', ['$scope', '$http', function IndexContr
     $scope.pay = function () {
 
         $scope.isProcessing = true;
-        $http.post(this.environment.apiUrl + '/external-payments', this.payment)
+        $http.post(this.environment.apiUrl + '/broker/payment', this.payment)
             .then(
                 function(response) {
                     $scope.hasSuccess = true;

@@ -17,14 +17,18 @@ import static org.asciidoctor.OptionsBuilder.options;
 @Component
 public class AsciiDocConverterService {
 
-    Asciidoctor asciidoctor = create();
+    public static final String GRAPTHVIZ_MODULE = "asciidoctor-diagram";
+    Asciidoctor asciidoctor;
+
+    public AsciiDocConverterService() {
+        asciidoctor = create();
+        asciidoctor.requireLibrary(GRAPTHVIZ_MODULE);
+    }
 
     public String convertFile(File inputAdoc) throws IOException {
-//        Map<String, Object> attributes = new HashMap<>();
-//        attributes.put("dot", "/usr/bin/dot");
         String content = new String(Files.readAllBytes(Paths.get(inputAdoc.getAbsolutePath())));
-        asciidoctor.requireLibrary("asciidoctor-diagram");
-        return asciidoctor.render(content, options().asMap());
+        return asciidoctor.render(content, options()
+                .mkDirs(true));
     }
 
 }

@@ -5,6 +5,9 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
@@ -15,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import ru.tn.gateway.publish.annotation.EnableGatewayPublishing;
 import ru.tn.gateway.publish.annotation.GatewayService;
 
-import java.lang.reflect.Method;
 import java.util.Map;
 
 @Slf4j
@@ -39,34 +41,33 @@ public class GatewayPublisherConfiguration {
         Map<String, Object> beans = ctx.getBeansWithAnnotation(EnableGatewayPublishing.class);
         beans.values().forEach(bean -> {
             Class<?> beanClass = ClassUtils.isCglibProxy(bean) ? bean.getClass().getSuperclass() : bean.getClass();
-                EnableGatewayPublishing annotation = beanClass.getAnnotation(EnableGatewayPublishing.class);
-                if(annotation != null) {
-                    String key = GATEWAY_SERVICE_KEY + appName;
-                    GatewayService[] gatewayServices = annotation.value();
-                    for (GatewayService gatewayService : gatewayServices) {
-                        consulClient.setKVValue(key + GATEWAY_SERVICE_URL, gatewayService.url());
-                        consulClient.setKVValue(key + GATEWAY_SERVICE_PATH, gatewayService.path());
-                    }
+            EnableGatewayPublishing annotation = beanClass.getAnnotation(EnableGatewayPublishing.class);
+            if (annotation != null) {
+                String key = GATEWAY_SERVICE_KEY + appName;
+                GatewayService[] gatewayServices = annotation.value();
+                for (GatewayService gatewayService : gatewayServices) {
+                    consulClient.setKVValue(key + GATEWAY_SERVICE_URL, gatewayService.url());
+                    consulClient.setKVValue(key + GATEWAY_SERVICE_PATH, gatewayService.path());
                 }
+            }
         });
         fillDependsServices();
     }
 
     @SneakyThrows
     private void fillDependsServices() {
-//        Map<String, Object> beans = ctx.getBeansWithAnnotation(FeignClient.class);
-//        String key = GATEWAY_SERVICE_KEY + appName + "/dependency";
-//        beans.values().forEach(bean -> {
-//            Class<?> beanClass = bean.getClass();
-//            String serviceId = beanClass.getAnnotation(FeignClient.class).value();
-//            Method[] declaredMethods = beanClass.getDeclaredMethods();
-//            for (Method method : declaredMethods) {
-//                RequestMapping requestMapping = method.getAnnotation(RequestMapping.class);
-//                if (requestMapping != null) {
-//                    consulClient.setKVValue(key, serviceId + "|" + requestMapping.value()[0]);
-//                }
-//            }
-//        });
+        String[] beanNames = ctx.getBeanNamesForAnnotation(FeignClient.class);
+        String key = GATEWAY_SERVICE_KEY + appName + "/dependency";
+        if (beanNames != null && beanNames.length > 0)
+            for (String beanName : beanNames) {
+                BeanDefinition beanDefinition = ((AnnotationConfigEmbeddedWebApplicationContext) ctx).getBeanDefinition(beanName);
+                if (beanDefinition instanceof GenericBeanDefinition) {
+                    String type = (String) beanDefinition.getPropertyValues().getPropertyValue("type").getValue();//todo check NullPointer
+                    String serviceName = Class.forName(type).getAnnotation(FeignClient.class).value();
+                    String serviceUrl = Class.forName(type).getDeclaredMethods()[0].getAnnotation(RequestMapping.class).value()[0];
+                    consulClient.setKVValue(key + "/" + serviceName, serviceName + "|" + serviceUrl);
+                }
+            }
     }
 
     public static String getGatewayServiceUrlKey(String serviceName) {

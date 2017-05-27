@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import ru.tn.errorhandler.EnableErrorHandle;
 import ru.tn.gateway.publish.annotation.EnableGatewayPublishing;
 import ru.tn.gateway.publish.annotation.GatewayService;
 
@@ -14,10 +14,9 @@ import ru.tn.gateway.publish.annotation.GatewayService;
 @EnableDiscoveryClient
 @EnableFeignClients
 @EnableGatewayPublishing(@GatewayService(path = "/broker/**", url = "/broker/"))
-@CrossOrigin
 @EnableScheduling
 @EntityScan("ru.tn.model")
-//@EnableErrorHandle
+@EnableErrorHandle
 public class PaymentBrokerApplication {
 
     public static void main(String[] args) {
