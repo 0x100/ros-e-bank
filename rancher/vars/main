@@ -9,7 +9,7 @@ else
     exit 1
 fi
 
-source "${vars_dir}/ports"
-source "${vars_dir}/vars"
+. "${vars_dir}/ports"
+. "${vars_dir}/vars"
 
 set +a
