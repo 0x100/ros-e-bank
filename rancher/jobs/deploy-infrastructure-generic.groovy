@@ -7,7 +7,7 @@ node(){
     try {
         withCredentials([[$class: "UsernamePasswordMultiBinding", credentialsId: "rancher", usernameVariable: "AKEY", passwordVariable: "SKEY"]]) {
             try {
-                echo "Deploy Application ${environ}"
+                echo "Deploy Application"
                 timeout(time: 300, unit: 'SECONDS') {
                     sh "source ${env.WORKSPACE}/rancher/vars/main;" +
                             "rancher-compose " +
@@ -21,7 +21,7 @@ node(){
                 }
 
             } catch (Exception err) {
-                echo "Rolling back ${environ}"
+                echo "Rolling back"
                 sh "source ${env.WORKSPACE}/rancher/vars/main;" +
                         "rancher-compose " +
                         "--debug " +
