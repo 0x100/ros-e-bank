@@ -9,7 +9,7 @@ node(){
             try {
                 echo "Deploy Application"
                 timeout(time: 300, unit: 'SECONDS') {
-                    sh "source ${env.WORKSPACE}/rancher/vars/main;" +
+                    sh ". ${env.WORKSPACE}/rancher/vars/main;" +
                             "rancher-compose " +
                             "--debug " +
                             "--url=http://127.0.0.1:8080/ " +
@@ -22,7 +22,7 @@ node(){
 
             } catch (Exception err) {
                 echo "Rolling back"
-                sh "source ${env.WORKSPACE}/rancher/vars/main;" +
+                sh ". ${env.WORKSPACE}/rancher/vars/main;" +
                         "rancher-compose " +
                         "--debug " +
                         "--url=http://127.0.0.1:8080/ " +
@@ -34,7 +34,7 @@ node(){
                 throw new Exception("Can't deploy applications. Rolling back..", err)
             }
             echo "Confirm Upgrade"
-            sh "source ${env.WORKSPACE}/rancher/vars/main;" +
+            sh ". ${env.WORKSPACE}/rancher/vars/main;" +
                     "rancher-compose " +
                     "--debug " +
                     "--url=http://127.0.0.1:8080/ " +
