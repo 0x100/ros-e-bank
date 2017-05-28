@@ -1,0 +1,5 @@
+#images
+image_load_balancer=rancher/lb-service-haproxy:v0.6.4
+image_redis=redis:3.0.7
+image_nginx=nginx:1.10.3-alpine
+image_prometheus=prom/prometheus:v1.6.2

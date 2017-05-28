@@ -1,0 +1,37 @@
+version: '2'
+services:
+  consul:
+    image: progrium/consul
+    hostname: consul
+    command:
+      - -server
+      - -bootstrap
+      - -ui-dir
+      - /ui
+    labels:
+      SERVICE_8302_IGNORE: 'true'
+      SERVICE_8500_IGNORE: 'true'
+      SERVICE_8301_IGNORE: 'true'
+      SERVICE_8300_IGNORE: 'true'
+      SERVICE_53_IGNORE: 'true'
+      SERVICE_8400_IGNORE: 'true'
+      io.rancher.container.pull_image: always
+    ports:
+      - $port_consul:8500/tcp
+    environment:
+      LOGSPOUT: ignore
+  registrator:
+    image: gliderlabs/registrator:master
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock
+    command:
+      - -internal
+      - -useIpFromLabel=io.rancher.container.ip
+      - -deregister=on-success
+      - consul://consul.consul:8500
+    labels:
+      io.rancher.container.hostname_override: container_name
+      io.rancher.container.pull_image: always
+      io.rancher.scheduler.global: 'true'
+    links:
+      - consul:consul

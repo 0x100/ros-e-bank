@@ -1,0 +1,8 @@
+version: '2'
+services:
+  docker:
+    image: registry:2
+    ports:
+    - $port_registry_docker:5000/tcp
+    labels:
+      io.rancher.container.pull_image: always

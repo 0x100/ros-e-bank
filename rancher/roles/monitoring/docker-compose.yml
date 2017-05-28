@@ -1,0 +1,110 @@
+version: '2'
+services:
+  node-exporter:
+    image: prom/node-exporter:latest
+    stdin_open: true
+    tty: true
+    labels:
+      io.rancher.scheduler.global: 'true'
+    environment:
+      LOGSPOUT: ignore
+  prom-conf:
+    image: docker.registry:$port_registry_docker/infinityworks/prom-conf:17
+    network_mode: none
+    volumes:
+      - /etc/prom-conf/
+    tty: true
+    links:
+      - node-exporter:node-exporter
+      - prometheus-rancher-exporter:prometheus-rancher-exporter
+      - cadvisor:cadvisor
+  grafana:
+    image: grafana/grafana:4.0.2
+    tty: true
+    links:
+      - prometheus:prometheus
+      - prometheus-rancher-exporter:prometheus-rancher-exporter
+    volumes_from:
+      - graf-db
+    ports:
+      - $port_grafana:3000/tcp
+    labels:
+      io.rancher.sidekicks: graf-db
+    environment:
+      LOGSPOUT: ignore
+  prometheus-rancher-exporter:
+    image: infinityworks/prometheus-rancher-exporter:v0.22.40
+    tty: true
+    labels:
+      io.rancher.container.agent.role: environment
+      io.rancher.container.create_agent: 'true'
+    environment:
+      LOGSPOUT: ignore
+  cadvisor:
+    image: google/cadvisor:latest
+    stdin_open: true
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    tty: true
+    ports:
+      - $port_cadvisor:8080/tcp
+    labels:
+      io.rancher.scheduler.global: 'true'
+    environment:
+      LOGSPOUT: ignore
+  prometheus:
+    image: $image_prometheus
+    tty: true
+    links:
+      - node-exporter:node-exporter
+      - prometheus-rancher-exporter:prometheus-rancher-exporter
+      - cadvisor:cadvisor
+    volumes_from:
+      - prom-conf
+    volumes:
+      - /opt/rancher_data/prometheus:/prometheus:rw
+    ports:
+      - $port_prometheus:9090/tcp
+    command:
+      - -alertmanager.url=http://alertmanager.monitoring:9093
+      - -config.file=/etc/prom-conf/prometheus.yml
+      - -storage.local.path=/prometheus
+      - -web.console.libraries=/etc/prometheus/console_libraries
+      - -web.console.templates=/etc/prometheus/consoles
+      - -storage.local.target-heap-size=1073741824
+      - -storage.local.retention=168h0m0s
+    labels:
+      io.rancher.sidekicks: prom-conf
+  graf-db:
+    image: infinityworks/graf-db:10
+    network_mode: none
+    volumes:
+      - /var/lib/grafana/
+    tty: true
+    links:
+      - prometheus:prometheus
+      - prometheus-rancher-exporter:prometheus-rancher-exporter
+    command:
+      - cat
+  influxdb:
+    image: tutum/influxdb:0.10
+    environment:
+      LOGSPOUT: ignore
+      GRAPHITE_BINDING: :2003
+      GRAPHITE_DB: rancher
+      PRE_CREATE_DB: grafana;prometheus;rancher
+    ports:
+      - $port_influxdb:2003/tcp
+
+  alertmanager:
+      image: docker.registry:$port_registry_docker/alertmanager
+      ports:
+        - $port_alertmanager:9093/tcp
+      volumes:
+        - /opt/rancher_data/alertmanager:/alertmanager:rw
+      labels:
+        io.rancher.container.hostname_override: container_name
+        io.rancher.container.pull_image: always

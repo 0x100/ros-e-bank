@@ -1,0 +1,16 @@
+#balancers services
+port_dispatcher_load_balancer=9000
+
+#databases
+port_mobile_monitoring_database=5432
+
+#infra
+port_consul=11000
+port_kibana=11001
+port_kopf=11002
+port_alertmanager=11003
+port_grafana=11004
+port_influxdb=11005
+port_prometheus=11006
+port_cadvisor=11007
+port_registry_docker=11008
