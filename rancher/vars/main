@@ -6,7 +6,7 @@ if [ -f "`pwd`/rancher/vars/main" ]; then
     vars_dir="`pwd`/rancher/vars"
 else
     echo "rancher dir not found"
-    exit(1)
+    exit 1
 fi
 
 source "${vars_dir}/ports"
