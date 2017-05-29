@@ -9,12 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
-import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.tn.gateway.publish.annotation.EnableGatewayPublishing;
@@ -64,7 +64,7 @@ public class GatewayPublisherConfiguration {
         String key = GATEWAY_SERVICE_KEY + appName + "/dependency";
         if (beanNames != null && beanNames.length > 0)
             for (String beanName : beanNames) {
-                BeanDefinition beanDefinition = ((AnnotationConfigEmbeddedWebApplicationContext) ctx).getBeanDefinition(beanName);
+                BeanDefinition beanDefinition = ((GenericApplicationContext) ctx).getBeanDefinition(beanName);
                 if (beanDefinition instanceof GenericBeanDefinition) {
                     String type = (String) beanDefinition.getPropertyValues().getPropertyValue("type").getValue();//todo check NullPointer
                     String serviceName = Class.forName(type).getAnnotation(FeignClient.class).value();

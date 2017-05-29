@@ -26,5 +26,6 @@ public class Payment {
 
     @NotNull
     private BigDecimal transferSum;
+
     private PaymentStatus status;
 }

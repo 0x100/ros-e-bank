@@ -12,6 +12,7 @@ import ru.tn.broker.exception.PaymentNotFoundException;
 import ru.tn.broker.exception.PaymentTypeNotSupportedException;
 import ru.tn.broker.repository.PaymentRepository;
 import ru.tn.model.Payment;
+import ru.tn.model.PaymentStatus;
 
 import java.net.URI;
 
@@ -28,32 +29,48 @@ public class PaymentService {
     @Autowired
     private PaymentServicesActuator paymentServicesActuator;
 
-    public ResponseEntity<?> pay(Payment payment) {
+    public ResponseEntity<Payment> pay(Payment payment) {
         String accountNumber = payment.getAccountNumber();
         String paymentType = accountNumber.substring(accountNumber.length() - paymentTypeDigitsCount);
 
+        Integer brokerPaymentId = paymentRepository.save(payment).getId();
         PaymentFeignClient client = paymentServicesActuator.getPaymentClient(paymentType);
+
         if(client != null) {
             ResponseEntity<Payment> result = client.pay(payment);
+            payment.setId(brokerPaymentId);
 
             if(result.getStatusCode() == HttpStatus.CREATED) {
-                payment = paymentRepository.save(payment);
+                savePaymentWithStatus(payment, PaymentStatus.PAID);
 
                 URI location = ServletUriComponentsBuilder
                         .fromCurrentRequest()
                         .path("/{id}")
-                        .buildAndExpand(payment.getId())
+                        .buildAndExpand(brokerPaymentId)
                         .toUri();
-                return ResponseEntity.created(location).build();
+                return ResponseEntity.created(location).body(payment);
+            } else {
+                savePaymentWithStatus(payment, PaymentStatus.ERROR);
             }
         } else {
+            payment.setId(brokerPaymentId);
+            savePaymentWithStatus(payment, PaymentStatus.ERROR);
+
             throw new PaymentTypeNotSupportedException(paymentType);
         }
         return ResponseEntity.noContent().build();
     }
 
     public Payment getPayment(Integer id) {
-        return paymentRepository.findById(id).orElseThrow(
-                () -> new PaymentNotFoundException(id));
+        return paymentRepository.findById(id).orElseThrow(() -> new PaymentNotFoundException(id));
+    }
+
+    public Iterable<Payment> getPaymentsHistory() {
+        return paymentRepository.findAll();
+    }
+
+    private void savePaymentWithStatus(Payment payment, PaymentStatus status) {
+        payment.setStatus(status);
+        paymentRepository.save(payment);
     }
 }

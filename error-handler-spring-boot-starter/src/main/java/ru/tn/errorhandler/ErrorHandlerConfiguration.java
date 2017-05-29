@@ -8,6 +8,6 @@ import org.springframework.context.annotation.PropertySource;
 @Configuration
 @EnableAspectJAutoProxy
 @ComponentScan(basePackages = "ru.tn.errorhandler")
-@PropertySource("ru/tn/errorhandler/application.yaml")
+@PropertySource("classpath:ru/tn/errorhandler/application.yaml")
 public class ErrorHandlerConfiguration {
 }

@@ -2,12 +2,7 @@ package ru.tn.broker.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.tn.broker.service.PaymentService;
 import ru.tn.model.Payment;
 
@@ -25,12 +20,17 @@ public class PaymentController {
     }
 
     @PostMapping
-    public ResponseEntity<?> pay(@RequestBody Payment payment) {
+    public ResponseEntity<Payment> pay(@RequestBody Payment payment) {
         return paymentService.pay(payment);
     }
 
-    @RequestMapping("{id}")
+    @GetMapping("{id}")
     public Payment getPayment(@PathVariable Integer id) {
         return paymentService.getPayment(id);
+    }
+
+    @GetMapping
+    public Iterable<Payment> getPaymentsHistory() {
+        return paymentService.getPaymentsHistory();
     }
 }
