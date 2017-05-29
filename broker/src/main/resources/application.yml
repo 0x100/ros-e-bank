@@ -17,3 +17,7 @@ server:
     port: 8095
 
 paymentTypeDigitsCount: 4
+
+management:
+  security:
+    enabled: false

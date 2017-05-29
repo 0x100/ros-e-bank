@@ -1,5 +1,7 @@
 package ru.tn.internalpayment;
 
+import io.prometheus.client.spring.boot.EnablePrometheusEndpoint;
+import io.prometheus.client.spring.boot.EnableSpringBootMetricsCollector;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -23,6 +25,8 @@ import ru.tn.gateway.publish.annotation.GatewayService;
 @EntityScan("ru.tn.model")
 @EnableErrorHandle
 @CrossOrigin
+@EnablePrometheusEndpoint
+@EnableSpringBootMetricsCollector
 public class InternalServiceApplication {
     public static void main(String[] args) {
         new SpringApplicationBuilder().sources(InternalServiceApplication.class)
