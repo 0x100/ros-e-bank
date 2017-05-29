@@ -5,8 +5,7 @@ set -a
 if [ -f "`pwd`/../rancher/vars/main" ]; then
     vars_dir="`pwd`/../rancher/vars"
 else
-    echo "rancher dir not found"
-    exit 1
+    vars_dir="`pwd`/rancher/vars"
 fi
 
 . "${vars_dir}/ports"
