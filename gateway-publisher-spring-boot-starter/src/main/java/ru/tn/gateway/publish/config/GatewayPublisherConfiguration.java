@@ -1,6 +1,8 @@
 package ru.tn.gateway.publish.config;
 
 import com.ecwid.consul.v1.ConsulClient;
+import io.prometheus.client.spring.boot.EnablePrometheusEndpoint;
+import io.prometheus.client.spring.boot.EnableSpringBootMetricsCollector;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,8 @@ import java.util.Map;
 
 @Slf4j
 @Configuration
+@EnablePrometheusEndpoint
+@EnableSpringBootMetricsCollector
 public class GatewayPublisherConfiguration {
     private static final String GATEWAY_SERVICE_KEY = "gateway/service/";
     private static final String GATEWAY_SERVICE_URL = "/url";

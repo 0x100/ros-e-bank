@@ -10,9 +10,14 @@ spring:
         show-sql: true
         hibernate:
             ddl-auto: update
+    sleuth:
+        sampler:
+            percentage: 1.0
 server:
-  port: 8095
+    port: 8095
 
-eureka:
-  client:
+paymentTypeDigitsCount: 4
+
+management:
+  security:
     enabled: false
