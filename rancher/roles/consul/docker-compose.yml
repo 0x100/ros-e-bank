@@ -20,18 +20,3 @@ services:
       - $port_consul:8500/tcp
     environment:
       LOGSPOUT: ignore
-  registrator:
-    image: gliderlabs/registrator:master
-    volumes:
-      - /var/run/docker.sock:/tmp/docker.sock
-    command:
-      - -internal
-      - -useIpFromLabel=io.rancher.container.ip
-      - -deregister=on-success
-      - consul://consul.consul:8500
-    labels:
-      io.rancher.container.hostname_override: container_name
-      io.rancher.container.pull_image: always
-      io.rancher.scheduler.global: 'true'
-    links:
-      - consul:consul
