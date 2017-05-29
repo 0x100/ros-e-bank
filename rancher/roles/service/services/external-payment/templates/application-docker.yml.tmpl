@@ -5,6 +5,7 @@ spring:
       host: consul.consul
       port: 8500
       discovery:
+        prefer-ip-address: true
         tags: accountNumber=0000, GATEWAY_SERVICE, service
         healthCheckUrl: http://server.{{ getenv "app_name" }}:8080/health
 
