@@ -20,18 +20,24 @@ paymentApp.controller('IndexController', ['$scope', '$http', function IndexContr
                     $scope.errorMsg = msg ? msg : 'Error has occurred';
                 }
             ).finally(function () {
-                $scope.isProcessing = false;
-            }).then(function () {
                 loadPaymentsHistory();
-                setTimeout(function () {
-                    $scope.$apply(function () {
-                        $scope.hasSuccess = false;
-                        $scope.hasError = false;
-                        $scope.errorMsg = '';
-                    });
-                }, 5000);
-            });
+                $scope.isProcessing = false;
+            }).then(reset());
     };
+
+    function getBrokerServiceUrl() {
+        return $scope.environment.apiUrl + '/broker/payment';
+    }
+
+    function reset () {
+        setTimeout(function () {
+            $scope.$apply(function () {
+                $scope.hasSuccess = false;
+                $scope.hasError = false;
+                $scope.errorMsg = '';
+            });
+        }, 5000);
+    }
 
     function loadPaymentsHistory() {
         $http.get(getBrokerServiceUrl()).then(
@@ -43,11 +49,7 @@ paymentApp.controller('IndexController', ['$scope', '$http', function IndexContr
                 $scope.hasError = true;
                 $scope.errorMsg = msg ? msg : 'Error loading payments history';
             }
-        );
-    }
-
-    function getBrokerServiceUrl() {
-        return $scope.environment.apiUrl + '/broker/payment';
+        ).then(reset());
     }
 
 }]);
