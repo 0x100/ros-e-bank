@@ -11,23 +11,25 @@ paymentApp.controller('IndexController', ['$scope', '$http', function IndexContr
         $scope.isProcessing = true;
         $http.post(getBrokerServiceUrl(), this.payment)
             .then(
-                function() {
+                function success() {
                     $scope.hasSuccess = true;
-                }, function() {
+                },
+                function error(response) {
+                    var msg = response.data ? response.data.message : null;
                     $scope.hasError = true;
-                    $scope.errorMsg = 'Error has occurred';
+                    $scope.errorMsg = msg ? msg : 'Error has occurred';
                 }
             ).finally(function () {
-                loadPaymentsHistory();
                 $scope.isProcessing = false;
             }).then(function () {
+                loadPaymentsHistory();
                 setTimeout(function () {
                     $scope.$apply(function () {
                         $scope.hasSuccess = false;
                         $scope.hasError = false;
                         $scope.errorMsg = '';
                     });
-                }, 3000);
+                }, 5000);
             });
     };
 
@@ -36,9 +38,10 @@ paymentApp.controller('IndexController', ['$scope', '$http', function IndexContr
             function success(response) {
                 $scope.payments = response.data;
             },
-            function error() {
+            function error(response) {
+                var msg = response.data ? response.data.message : null;
                 $scope.hasError = true;
-                $scope.errorMsg = 'Error loading payments history';
+                $scope.errorMsg = msg ? msg : 'Error loading payments history';
             }
         );
     }
