@@ -1,8 +1,5 @@
 #balancers services
-port_dispatcher_load_balancer=9000
-
-#databases
-port_mobile_monitoring_database=5432
+port_external_payment_load_balancer=9000
 
 #infra
 port_consul=11000

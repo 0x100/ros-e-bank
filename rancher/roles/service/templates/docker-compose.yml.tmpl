@@ -1,0 +1,23 @@
+version: '2'
+services:
+  server:
+    image: docker.registry:{{ getenv "port_registry_docker" }}/{{ getenv "app_name" }}:{{ getenv "DOCKER_TAG" }}
+    labels:
+      io.rancher.container.pull_image: always
+      io.rancher.scheduler.global: 'true'
+      io.rancher.scheduler.affinity:host_label: type=apps
+      SERVICE_NAME: {{ getenv "app_name" }}
+      SERVICE_TAGS: service
+    environment:
+      LOGSTASH_TAGS: {{ getenv "app_name" }}-server
+  load-balancer:
+    image: {{ getenv "image_load_balancer" }}
+    ports:
+      - {{ getenv (printf "port_%s_load_balancer" (replace (getenv "app_name") "-" "_" -1)) }}:{{ getenv (printf "port_%s_load_balancer" (replace (getenv "app_name") "-" "_" -1)) }}/tcp
+    labels:
+      io.rancher.container.agent.role: environmentAdmin
+      io.rancher.container.create_agent: 'true'
+      io.rancher.scheduler.affinity:host_label: type=apps
+      io.rancher.scheduler.global: 'true'
+    links:
+      - server:server
