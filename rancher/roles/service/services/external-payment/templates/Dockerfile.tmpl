@@ -1,4 +1,4 @@
-FROM 8u111-jdk-alpine
+FROM java:8u111-jdk-alpine
 ADD target/{{ getenv "app_name"}}-1.0.0-SNAPSHOT.jar app.jar
 ADD application-docker.yml application-docker.yml
 EXPOSE 8080
