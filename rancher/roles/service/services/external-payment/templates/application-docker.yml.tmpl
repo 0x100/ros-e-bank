@@ -4,6 +4,8 @@ spring:
     consul:
       host: consul.consul
       port: 8500
+      discovery:
+        healthCheckUrl: http://server.{{ getenv "app_name" }}:8080/health
 
 server:
   port: 8080
