@@ -24,7 +24,7 @@ public class PaymentController {
         return paymentService.pay(payment);
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public Payment getPayment(@PathVariable Integer id) {
         return paymentService.getPayment(id);
     }

@@ -24,6 +24,26 @@
         <button ng-click="pay()" type="submit" class="btn btn-primary">Оплатить</button>
     </form>
 </div>
+<div class="row" style="margin-top: 20px">
+    <h3>История платежей</h3>
+    <div class="row" style="margin: 0; padding: 0">
+        <table class="table">
+            <tr style="font-weight: bold">
+                <td>№</td>
+                <td>Получатель</td>
+                <td>Номер счета</td>
+                <td>Сумма</td>
+            </tr>
+            <tr ng-repeat="(index, payment) in payments"
+                ng-class="{'success': payment.status == 'PAID', 'danger': payment.status == 'ERROR'}">
+                <td>{{index + 1}}</td>
+                <td>{{payment.clientName}}</td>
+                <td>{{payment.accountNumber}}</td>
+                <td>{{payment.transferSum}}</td>
+            </tr>
+        </table>
+    </div>
+</div>
 <div class="row">
     <div class="alert alert-danger alert-fixed col-sm-4 modal-dialog" ng-show="hasError" ng-hide="!hasError">
         <strong>{{ errorMsg }}</strong>

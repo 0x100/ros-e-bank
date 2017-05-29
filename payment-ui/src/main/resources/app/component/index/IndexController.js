@@ -2,21 +2,23 @@ paymentApp.controller('IndexController', ['$scope', '$http', function IndexContr
     $http.get('/environment.json')
         .then(function(response) {
             $scope.environment = JSON.parse(JSON.stringify(response.data));
+            loadPaymentsHistory();
         });
 
     $scope.payment = {};
     $scope.pay = function () {
 
         $scope.isProcessing = true;
-        $http.post(this.environment.apiUrl + '/broker/payment', this.payment)
+        $http.post(getBrokerServiceUrl(), this.payment)
             .then(
-                function(response) {
+                function() {
                     $scope.hasSuccess = true;
-                }, function(response) {
+                }, function() {
                     $scope.hasError = true;
                     $scope.errorMsg = 'Error has occurred';
                 }
             ).finally(function () {
+                loadPaymentsHistory();
                 $scope.isProcessing = false;
             }).then(function () {
                 setTimeout(function () {
@@ -27,7 +29,22 @@ paymentApp.controller('IndexController', ['$scope', '$http', function IndexContr
                     });
                 }, 3000);
             });
+    };
+
+    function loadPaymentsHistory() {
+        $http.get(getBrokerServiceUrl()).then(
+            function success(response) {
+                $scope.payments = response.data;
+            },
+            function error() {
+                $scope.hasError = true;
+                $scope.errorMsg = 'Error loading payments history';
+            }
+        );
     }
 
+    function getBrokerServiceUrl() {
+        return $scope.environment.apiUrl + '/broker/payment';
+    }
 
 }]);
