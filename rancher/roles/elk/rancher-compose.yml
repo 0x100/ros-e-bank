@@ -1,0 +1,61 @@
+version: '2'
+services:
+  curator:
+    scale: 1
+  elasticsearch:
+    scale: 1
+  kibana:
+    scale: 1
+  logstash-collector-config:
+    metadata:
+      logstash: &id001
+        inputs: |+
+          udp {
+            port => 5000
+            codec => "json"
+          }
+          tcp {
+            port => 6000
+            codec => "json"
+          }
+
+        outputs: |
+          redis {
+            host => "redis"
+            port => "6379"
+            data_type => "list"
+            key => "logstash"
+          }
+    scale: 1
+  logstash-collector:
+    metadata:
+      logstash: *id001
+    scale: 1
+  logstash-indexer:
+    metadata:
+      logstash: &id002
+        filters: |2+
+
+        inputs: |
+          redis {
+            host => "redis"
+            port => "6379"
+            data_type => "list"
+            key => "logstash"
+          }
+        outputs: |+
+          elasticsearch {
+            host => "elasticsearch"
+            protocol => "http"
+            index => "logstash-%{+YYYY.MM.dd}"
+          }
+
+    scale: 1
+  redis:
+    scale: 1
+  logstash-indexer-config:
+    metadata:
+      logstash: *id002
+    scale: 1
+  packetbeat:
+    start_on_create: true

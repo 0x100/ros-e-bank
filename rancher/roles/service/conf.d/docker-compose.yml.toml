@@ -1,0 +1,3 @@
+[template]
+src = "docker-compose.yml.tmpl"
+dest = "docker-compose.yml"

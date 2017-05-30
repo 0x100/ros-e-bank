@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -a
+
+if [ -f "`pwd`/../rancher/vars/main" ]; then
+    vars_dir="`pwd`/../rancher/vars"
+else
+    vars_dir="`pwd`/rancher/vars"
+fi
+
+. "${vars_dir}/ports"
+. "${vars_dir}/vars"
+
+set +a

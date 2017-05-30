@@ -1,0 +1,8 @@
+ALERT InstanceDown
+  IF up == 0
+  FOR 1m
+  LABELS { group = "service" }
+  ANNOTATIONS {
+    summary = "Instance {{ $labels.service }} down",
+    description = "{{ $labels.service }} of job {{ $labels.job }} has been down for more than 1 minutes.",
+  }

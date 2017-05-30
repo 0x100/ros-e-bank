@@ -1,0 +1,136 @@
+version: '2'
+services:
+  logstash-collector-config:
+    image: rancher/logstash-config:v0.2.0
+    links:
+      - redis:redis
+
+  logstash-collector:
+    image: logstash:1.5.6-1
+    links:
+      - redis:redis
+    volumes_from:
+      - logstash-collector-config
+    command:
+      - logstash
+      - --debug
+      - -f
+      - /etc/logstash
+    labels:
+      io.rancher.sidekicks: logstash-collector-config
+    logging:
+      driver: json-file
+      options:
+        max-size: 150m
+        max-file: 5
+    environment:
+      LOGSPOUT: ignore
+
+  logstash-indexer:
+    image: logstash:1.5.6-1
+    links:
+      - redis:redis
+      - elasticsearch:elasticsearch
+    volumes_from:
+      - logstash-indexer-config
+    command:
+      - logstash
+      - --debug
+      - -f
+      - /etc/logstash
+    labels:
+      io.rancher.sidekicks: logstash-indexer-config
+    logging:
+      driver: json-file
+      options:
+        max-size: 150m
+        max-file: 5
+    environment:
+      LOGSPOUT: ignore
+
+  redis:
+    image: redis:3.0.7
+    environment:
+      LOGSPOUT: ignore
+
+  logstash-indexer-config:
+    image: rancher/logstash-config:v0.2.0
+    links:
+      - redis:redis
+      - elasticsearch:elasticsearch
+
+  curator:
+    image: visity/elasticsearch-curator:latest
+    environment:
+      LOGSPOUT: ignore
+      INTERVAL_IN_HOURS: '24'
+      OLDER_THAN_IN_DAYS: '7'
+    links:
+      - elasticsearch:elasticsearch
+    labels:
+      io.rancher.container.pull_image: always
+
+  logspout:
+    image: bekt/logspout-logstash:latest
+    environment:
+      LOGSPOUT: ignore
+      ROUTE_URIS: logstash+tcp://logstash-collector.elk:6000
+      DEBUG: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /etc/localtime:/etc/localtime:ro
+    labels:
+      io.rancher.scheduler.global: 'true'
+    links:
+      - logstash-collector:logstash-collector
+
+  elasticsearch:
+    image: elasticsearch:2.4.1
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /opt/rancher_data/elasticsearch:/usr/share/elasticsearch/data:rw
+    labels:
+      io.rancher.container.pull_image: always
+    environment:
+      LOGSPOUT: ignore
+
+  kopf:
+    image: rancher/kopf:v0.4.0
+    environment:
+      LOGSPOUT: ignore
+      KOPF_SERVER_NAME: elasticsearch
+      KOPF_ES_SERVERS: elasticsearch.elk:9200
+    links:
+      - elasticsearch:elasticsearch
+    ports:
+      - $port_kopf:80/tcp
+    labels:
+      io.rancher.container.pull_image: always
+
+  kibana:
+    image: kibana:4.6.2
+    environment:
+      LOGSPOUT: ignore
+      ELASTICSEARCH_URL: http://elasticsearch.elk:9200
+      NODE_OPTIONS: --max_old_space_size=400
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    links:
+      - elasticsearch:elasticsearch
+    ports:
+      - $port_kibana:5601/tcp
+    labels:
+      io.rancher.container.pull_image: always
+
+  packetbeat:
+    image: docker.registry:$port_registry_docker/packetbeat:5.4.0
+    stdin_open: true
+    network_mode: host
+    tty: true
+    labels:
+      io.rancher.container.dns: 'true'
+      io.rancher.container.hostname_override: container_name
+      io.rancher.container.pull_image: always
+      io.rancher.scheduler.global: 'true'
+    environment:
+      LOGSPOUT: ignore
