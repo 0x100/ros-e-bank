@@ -2,7 +2,8 @@ FROM java:8u111-jdk-alpine
 ADD target/{{ getenv "app_name"}}-1.0.0-SNAPSHOT.jar app.jar
 ADD application-docker.yml application-docker.yml
 EXPOSE 8080
-RUN apk --update add tzdata graphviz && \
+RUN apk --update add tzdata graphviz ruby && \
+    gem install asciidoctor && \
     cp /usr/share/zoneinfo/Europe/Moscow /etc/localtime && echo Europe/Moscow > /etc/timezone && \
     apk del tzdata
 ENTRYPOINT ["java", "-Xmx200m", "-jar", "-Dspring.config.location=file:/application-docker.yml", "-Dspring.profiles.active=docker", "-Djava.security.egd=file:/dev/./urandom", "/app.jar"]
