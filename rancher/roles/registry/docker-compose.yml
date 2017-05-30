@@ -2,6 +2,8 @@ version: '2'
 services:
   docker:
     image: registry:2
+    environment:
+      REGISTRY_STORAGE_DELETE_ENABLED: 'true'
     ports:
       - $port_registry_docker:5000/tcp
     labels:
