@@ -3,8 +3,6 @@ package ru.tn.gateway;
 import com.ecwid.consul.v1.ConsulClient;
 import com.ecwid.consul.v1.Response;
 import com.ecwid.consul.v1.kv.model.GetValue;
-import io.prometheus.client.spring.boot.EnablePrometheusEndpoint;
-import io.prometheus.client.spring.boot.EnableSpringBootMetricsCollector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -25,8 +23,6 @@ import static org.springframework.util.StringUtils.hasText;
 
 @EnableZuulProxy
 @SpringBootApplication
-@EnablePrometheusEndpoint
-@EnableSpringBootMetricsCollector
 public class GatewayApplication {
     private static final String GATEWAY_SERVICE_KEY = "gateway/service";
 

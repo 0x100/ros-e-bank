@@ -20,7 +20,3 @@ spring:
       percentage: 1.0
 server:
   port: 8093
-
-management:
-  security:
-    enabled: false

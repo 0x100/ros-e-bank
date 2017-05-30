@@ -1,10 +1,6 @@
 server:
   port: 8091
 
-management:
-  security:
-    enabled: false
-
 spring:
   sleuth:
     sampler:
