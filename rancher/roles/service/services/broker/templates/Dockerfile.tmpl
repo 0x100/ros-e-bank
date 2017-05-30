@@ -5,4 +5,4 @@ EXPOSE 8080
 RUN apk --update add tzdata && \
     cp /usr/share/zoneinfo/Europe/Moscow /etc/localtime && echo Europe/Moscow > /etc/timezone && \
     apk del tzdata
-ENTRYPOINT ["java", "-Xmx400m", "-jar", "-Dspring.config.location=file:/application-docker.yml", "-Dspring.profiles.active=docker", "-Djava.security.egd=file:/dev/./urandom", "/app.jar"]
+ENTRYPOINT ["java", "-Xss128m", "-Xmx400m", "-jar", "-Dspring.config.location=file:/application-docker.yml", "-Dspring.profiles.active=docker", "-Djava.security.egd=file:/dev/./urandom", "/app.jar"]
