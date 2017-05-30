@@ -1,6 +1,10 @@
 #balancers services
 port_external_payment_load_balancer=9000
 port_internal_payment_load_balancer=9001
+port_broker_load_balancer=9002
+port_gateway_load_balancer=9003
+port_service_discovery_load_balancer=9004
+
 
 #infra
 port_consul=11000
