@@ -20,6 +20,7 @@
 
 	<modules>
 		<module>model</module>
+		<module>bootstrap-starter</module>
 		<module>external-payment</module>
         <module>internal-payment</module>
 		<module>gateway</module>
