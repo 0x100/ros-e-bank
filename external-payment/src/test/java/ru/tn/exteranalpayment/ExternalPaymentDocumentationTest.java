@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 
 @SpringBootTest(classes = ExternalPaymentApplication.class)
 @RunWith(SpringRunner.class)
-public class ExternalPaymentDocumentation {
+public class ExternalPaymentDocumentationTest {
     private static final Gson gson = new Gson();
     private static final Payment payment = new Payment();
 
