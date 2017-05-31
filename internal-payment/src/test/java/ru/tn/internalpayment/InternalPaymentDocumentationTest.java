@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 
 @SpringBootTest(classes = InternalServiceApplication.class)
 @RunWith(SpringRunner.class)
-public class InternalPaymentDocumentation {
+public class InternalPaymentDocumentationTest {
     private static final Gson gson = new Gson();
     private static final Payment payment = new Payment();
 
