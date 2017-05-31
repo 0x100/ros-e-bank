@@ -5,3 +5,7 @@ spring:
   sleuth:
     sampler:
       percentage: 1.0
+
+management:
+  security:
+    enabled: false
