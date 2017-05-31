@@ -6,13 +6,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.mock.http.MockHttpOutputMessage;
 import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.restdocs.payload.FieldDescriptor;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -20,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import ru.tn.broker.PaymentBrokerApplication;
 import ru.tn.broker.repository.PaymentRepository;
+import ru.tn.broker.service.PaymentServicesActuator;
+import ru.tn.gateway.publish.config.GatewayPublisherConfiguration;
 import ru.tn.model.Payment;
 
 import java.io.IOException;
@@ -32,6 +38,8 @@ import java.util.List;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
@@ -46,6 +54,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @SpringBootTest(classes = PaymentBrokerApplication.class)
 @WebAppConfiguration
 @Transactional
+@ActiveProfiles("test")
 public class PaymentControllerTest {
 
     private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
@@ -58,6 +67,12 @@ public class PaymentControllerTest {
 
     @Autowired
     private WebApplicationContext context;
+
+    @MockBean
+    private PaymentServicesActuator actuator;
+
+    @MockBean
+    private GatewayPublisherConfiguration gatewayPublisher;
 
     @Rule
     public JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation("target/generated-snippets");
@@ -96,22 +111,22 @@ public class PaymentControllerTest {
         paymentRepository.deleteAll();
 
         Payment payment = new Payment();
-        payment.setAccountNumber("224477880000");
+        payment.setAccountNumber("224477887777");
         payment.setClientName("R.Abramovich");
         payment.setTransferSum(BigDecimal.valueOf(112233445566.77));
 
         Payment storedPayment = paymentRepository.save(payment);
         payments.add(storedPayment);
+
+        when(actuator.getPaymentClient(eq("7777"))).thenReturn(p -> new ResponseEntity<>(HttpStatus.CREATED));
     }
 
     @Test
     public void pay() throws Exception {
         Payment payment = new Payment();
-        payment.setAccountNumber("112233449999");
+        payment.setAccountNumber("112233447777");
         payment.setClientName("V.Pupkin");
         payment.setTransferSum(BigDecimal.valueOf(1025.55));
-
-        Thread.sleep(3000);
 
         mockMvc.perform(
                 post("/broker/payment")
@@ -124,7 +139,7 @@ public class PaymentControllerTest {
     public void getPayment() throws Exception {
         Payment payment = payments.get(0);
 
-        assertEquals("224477880000", payment.getAccountNumber());
+        assertEquals("224477887777", payment.getAccountNumber());
         assertEquals("R.Abramovich", payment.getClientName());
         assertEquals(BigDecimal.valueOf(112233445566.77), payment.getTransferSum());
 

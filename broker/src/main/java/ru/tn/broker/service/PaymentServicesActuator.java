@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.netflix.feign.DynamicFeignClient;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import ru.tn.broker.client.PaymentFeignClient;
 
@@ -18,6 +19,7 @@ import static ru.tn.gateway.publish.config.GatewayPublisherConfiguration.getGate
 
 @Component
 @RefreshScope
+@Profile("!test")
 public class PaymentServicesActuator {
 
     @Value("${paymentTypeDigitsCount}")
@@ -31,7 +33,7 @@ public class PaymentServicesActuator {
 
     private Map<String, PaymentFeignClient> paymentServicesClients = new HashMap<>();
 
-    PaymentFeignClient getPaymentClient(String paymentType) {
+    public PaymentFeignClient getPaymentClient(String paymentType) {
         return paymentServicesClients.get(paymentType);
     }
 
