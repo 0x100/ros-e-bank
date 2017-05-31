@@ -24,6 +24,17 @@ node('master'){
                         "--project-name=${env.app_name} " +
                         "up -d --pull --upgrade --batch-size '1'"
                 }
+            stage 'Confirm Upgrade'
+                timeout(time: 300, unit: 'SECONDS') {
+                    sh  ". ${env.WORKSPACE}/rancher/vars/main;" +
+                            "rancher-compose " +
+                            "--debug " +
+                            "--url=http://127.0.0.1:8080/ " +
+                            "--access-key=${env.AKEY} " +
+                            "--secret-key=${env.SKEY} " +
+                            "--project-name=${env.app_name} " +
+                            "up -d --confirm-upgrade"
+                }
 
         } catch (Exception err) {
             echo 'Rolling back'
@@ -37,14 +48,5 @@ node('master'){
                     "up -d --rollback"
             throw new Exception("Can't deploy applications. Rolling back..", err)
         }
-        stage 'Confirm Upgrade'
-            sh  ". ${env.WORKSPACE}/rancher/vars/main;" +
-                "rancher-compose " +
-                "--debug " +
-                "--url=http://127.0.0.1:8080/ " +
-                "--access-key=${env.AKEY} " +
-                "--secret-key=${env.SKEY} " +
-                "--project-name=${env.app_name} " +
-                "up -d --confirm-upgrade"
     }
 }
