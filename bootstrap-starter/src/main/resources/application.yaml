@@ -2,4 +2,6 @@ management:
   security:
     enabled: false
 
-
+spring.metrics.export.enabled: false
+spring.metrics.servo.enabled: false
+hystrix.metrics.enabled: false  #https://github.com/spring-cloud/spring-cloud-netflix/issues/781

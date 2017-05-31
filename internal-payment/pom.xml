@@ -61,6 +61,7 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-hystrix</artifactId>
+            <version>1.3.1.RELEASE</version>   <!--https://github.com/spring-cloud/spring-cloud-netflix/issues/781-->
         </dependency>
         <dependency>
             <groupId>ru.tn</groupId>

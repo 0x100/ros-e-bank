@@ -1,6 +1,7 @@
 spring:
   application:
     name: internal-payment
+
   datasource:
     url: jdbc:hsqldb:file:db/internal_payments/store
     username: sa
@@ -11,12 +12,15 @@ spring:
     consul:
       discovery:
         tags: accountNumber=9999, GATEWAY_SERVICE
+
   jpa:
     show-sql: true
     hibernate:
       ddl-auto: update
+
   sleuth:
     sampler:
       percentage: 1.0
+
 server:
   port: 8093
