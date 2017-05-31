@@ -6,4 +6,4 @@ RUN apk --update add tzdata graphviz ruby && \
     gem install asciidoctor -include-dependencies && \
     cp /usr/share/zoneinfo/Europe/Moscow /etc/localtime && echo Europe/Moscow > /etc/timezone && \
     apk del tzdata
-ENTRYPOINT ["java", "-Xmx200m", "-jar", "-Dspring.config.location=file:/application-docker.yml", "-Dspring.profiles.active=docker", "-Djava.security.egd=file:/dev/./urandom", "/app.jar"]
+ENTRYPOINT ["java", "-Xmx200m", "-jar", "-Dspring.config.location=file:/application-docker.yml", "-Dspring.profiles.active=docker,prod", "-Djava.security.egd=file:/dev/./urandom", "/app.jar"]
