@@ -35,7 +35,7 @@
                 <td>Сумма</td>
             </tr>
             <tr ng-repeat="(index, payment) in payments"
-                ng-class="{'success': payment.status == 'PAID', 'danger': payment.status == 'ERROR'}">
+                ng-class="{'success': payment.status == 'PAID', 'danger': payment.status != 'PAID'}">
                 <td>{{index + 1}}</td>
                 <td>{{payment.clientName}}</td>
                 <td>{{payment.accountNumber}}</td>

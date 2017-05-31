@@ -1,5 +1,7 @@
 package ru.tn.broker.service;
 
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -29,6 +31,7 @@ public class PaymentService {
     @Autowired
     private PaymentServicesActuator paymentServicesActuator;
 
+    @HystrixCommand(fallbackMethod = "defaultPay", ignoreExceptions = {PaymentTypeNotSupportedException.class}, commandProperties = {@HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE")})
     public ResponseEntity<Payment> pay(Payment payment) {
         String accountNumber = payment.getAccountNumber();
         String paymentType = accountNumber.substring(accountNumber.length() - paymentTypeDigitsCount);
@@ -36,21 +39,20 @@ public class PaymentService {
         Integer brokerPaymentId = paymentRepository.save(payment).getId();
         PaymentFeignClient client = paymentServicesActuator.getPaymentClient(paymentType);
 
-        if(client != null) {
+        if (client != null) {
             ResponseEntity<Payment> result = client.pay(payment);
+            boolean success = result.getStatusCode() == HttpStatus.CREATED;
+
             payment.setId(brokerPaymentId);
+            savePaymentWithStatus(payment, success ? PaymentStatus.PAID : PaymentStatus.ERROR);
 
-            if(result.getStatusCode() == HttpStatus.CREATED) {
-                savePaymentWithStatus(payment, PaymentStatus.PAID);
-
+            if (success) {
                 URI location = ServletUriComponentsBuilder
                         .fromCurrentRequest()
                         .path("/{id}")
                         .buildAndExpand(brokerPaymentId)
                         .toUri();
                 return ResponseEntity.created(location).body(payment);
-            } else {
-                savePaymentWithStatus(payment, PaymentStatus.ERROR);
             }
         } else {
             payment.setId(brokerPaymentId);
@@ -67,6 +69,10 @@ public class PaymentService {
 
     public Iterable<Payment> getPaymentsHistory() {
         return paymentRepository.findAll();
+    }
+
+    public ResponseEntity<Payment> defaultPay(Payment payment) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
     }
 
     private void savePaymentWithStatus(Payment payment, PaymentStatus status) {

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.cloud.netflix.hystrix.dashboard.EnableHystrixDashboard;
 import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
 import org.springframework.cloud.netflix.zuul.filters.ZuulProperties;
 import org.springframework.cloud.netflix.zuul.filters.ZuulProperties.ZuulRoute;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 import static org.springframework.util.StringUtils.hasText;
 
 @EnableZuulProxy
+@EnableHystrixDashboard
 @SpringBootApplication
 public class GatewayApplication {
     private static final String GATEWAY_SERVICE_KEY = "gateway/service";

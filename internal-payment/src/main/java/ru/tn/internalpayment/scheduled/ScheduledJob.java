@@ -6,7 +6,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import ru.tn.internalpayment.controller.FeignController;
 import ru.tn.model.Payment;
-import ru.tn.model.PaymentStatus;
 
 import java.math.BigDecimal;
 
@@ -26,7 +25,6 @@ public class ScheduledJob {
         Payment payment = new Payment();
         payment.setAccountNumber("00009999");
         payment.setClientName("Client FIO");
-        payment.setStatus(PaymentStatus.UNKNOWN);
         payment.setTransferSum(BigDecimal.valueOf(1000));
 
         extPay.pay(payment);

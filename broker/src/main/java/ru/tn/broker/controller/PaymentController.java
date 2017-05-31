@@ -1,14 +1,15 @@
 package ru.tn.broker.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.tn.broker.service.PaymentService;
 import ru.tn.model.Payment;
 
-
-@CrossOrigin
 @RestController
+@CrossOrigin
+@EnableCircuitBreaker
 @RequestMapping("/broker/payment")
 public class PaymentController {
 
