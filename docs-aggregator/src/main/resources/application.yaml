@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: docs-aggregator
+
+server:
+  port: 8099
+

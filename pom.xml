@@ -30,6 +30,7 @@
 		<module>zipkin-server</module>
 		<module>error-handler-spring-boot-starter</module>
 		<module>payment-ui</module>
+		<module>docs-aggregator</module>
 	</modules>
 
 	<properties>

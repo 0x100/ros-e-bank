@@ -1,0 +1,45 @@
+<html>
+<head>
+    <title>Документация микросервисной платформы</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Helvetica,Arial,Freesans,Clean,sans-serif;
+        }
+        .docs {
+            width: 700px;
+            margin: auto;
+            padding: 50px;
+            font-size: 175%;
+        }
+
+        a {
+            text-decoration: none;
+            color: #4183c4;
+        }
+        h3 {
+            color: #4068a8;
+        }
+        ul li {
+            list-style-type: none;
+            line-height: 140%;
+        }
+    </style>
+</head>
+<body>
+<div class="docs">
+    <h3>Контур</h3>
+    <div class="ms-contour">
+        <img src="${contourImgPath}" />
+    </div>
+
+    <br/>
+    <h3>Документация сервисов</h3>
+    <div class="services">
+        <ul>
+            ${documentationLinks}
+        </ul>
+    </div>
+</div>
+</body>
+</html>
