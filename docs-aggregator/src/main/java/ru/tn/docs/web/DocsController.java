@@ -22,6 +22,7 @@ import java.util.Map;
 import static java.text.MessageFormat.format;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toMap;
+import static org.springframework.util.StringUtils.hasText;
 
 
 @RestController
@@ -34,6 +35,9 @@ public class DocsController {
     private static final String SERVICE_DISCOVERY_ID = "service-discovery";
 
     private final ConsulClient consulClient;
+
+    @Value("${spring.application.name}")
+    private String appName;
 
     @Value("classpath:docs.template")
     private Resource docsTemplate;
@@ -55,7 +59,7 @@ public class DocsController {
         }
 
         Map<String, String> services  = consulClient.getAgentServices().getValue().values().stream()
-                .filter(service -> StringUtils.hasText(service.getAddress()))
+                .filter(service -> hasText(service.getAddress()) && !service.getId().equals(appName))
                 .collect(toMap(Service::getService, service -> "http://" + service.getAddress() + ":" + service.getPort()));
 
         String serviceDiscoveryUrl = services.getOrDefault(SERVICE_DISCOVERY_ID, "");
