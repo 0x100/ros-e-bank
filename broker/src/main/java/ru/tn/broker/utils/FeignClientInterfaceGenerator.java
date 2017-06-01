@@ -10,9 +10,16 @@ import javassist.bytecode.ClassFile;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.annotation.*;
 import lombok.SneakyThrows;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class FeignClientInterfaceGenerator {
 
@@ -37,6 +44,7 @@ public class FeignClientInterfaceGenerator {
 
     private static <T> CtClass copyInterface(Class<T> oldFeignClientInterface, String newInterfaceName) throws NotFoundException {
         ClassPool classPool = ClassPool.getDefault();
+        checkClassPath(oldFeignClientInterface, classPool);
         CtClass oldInterface = classPool.get(oldFeignClientInterface.getName());
         oldInterface.defrost();
         oldInterface.setName(newInterfaceName);
@@ -92,5 +100,19 @@ public class FeignClientInterfaceGenerator {
             httpMethod = RequestMethod.POST;
         }
         return httpMethod;
+    }
+
+    private static <T> void checkClassPath(Class<T> clazz, ClassPool classPool) throws NotFoundException {
+        String className4Check = clazz.getName();
+
+        if(classPool.find(className4Check) == null) {
+            classPool.appendClassPath("classes/");
+
+            if(classPool.find(className4Check) == null) {
+                URL[] urLs = ((URLClassLoader) (Thread.currentThread().getContextClassLoader())).getURLs();
+                List<String> paths = Arrays.stream(urLs).map(URL::getPath).collect(Collectors.toList());
+                classPool.appendPathList(StringUtils.join(paths, ';'));
+            }
+        }
     }
 }
