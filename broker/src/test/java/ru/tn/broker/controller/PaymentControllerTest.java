@@ -44,6 +44,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -79,9 +80,17 @@ public class PaymentControllerTest {
 
     private RestDocumentationResultHandler resultHandler;
 
-    private final FieldDescriptor[] paymentFields = new FieldDescriptor[]{
-            fieldWithPath("id").description("ID платежа"),
-            fieldWithPath("clientName").description("Имя клиента"),
+    private final FieldDescriptor[] requestPaymentFields = new FieldDescriptor[]{
+            fieldWithPath("id").ignored(),
+            fieldWithPath("clientName").description("Имя получателя платежа"),
+            fieldWithPath("accountNumber").description("Номер счета (последние 4 цифры идентифицируют тип платежа)"),
+            fieldWithPath("transferSum").description("Сумма платежа"),
+            fieldWithPath("status").ignored()
+    };
+
+    private final FieldDescriptor[] responsePaymentFields = new FieldDescriptor[]{
+            fieldWithPath("id").description("ID платежа в БД платежного брокера"),
+            fieldWithPath("clientName").description("Имя получателя платежа"),
             fieldWithPath("accountNumber").description("Номер счета"),
             fieldWithPath("transferSum").description("Сумма платежа"),
             fieldWithPath("status").description("Статус платежа")
@@ -111,20 +120,24 @@ public class PaymentControllerTest {
         paymentRepository.deleteAll();
 
         Payment payment = new Payment();
-        payment.setAccountNumber("224477887777");
+        payment.setAccountNumber("224477880000");
         payment.setClientName("R.Abramovich");
         payment.setTransferSum(BigDecimal.valueOf(112233445566.77));
+        payments.add(paymentRepository.save(payment));
 
-        Payment storedPayment = paymentRepository.save(payment);
-        payments.add(storedPayment);
+        payment = new Payment();
+        payment.setAccountNumber("114475769999");
+        payment.setClientName("A.Ivanov");
+        payment.setTransferSum(BigDecimal.valueOf(112233445566.77));
+        payments.add(paymentRepository.save(payment));
 
-        when(actuator.getPaymentClient(eq("7777"))).thenReturn(p -> new ResponseEntity<>(HttpStatus.CREATED));
+        when(actuator.getPaymentClient(eq("0000"))).thenReturn(p -> new ResponseEntity<>(HttpStatus.CREATED));
     }
 
     @Test
     public void pay() throws Exception {
         Payment payment = new Payment();
-        payment.setAccountNumber("112233447777");
+        payment.setAccountNumber("112233440000");
         payment.setClientName("V.Pupkin");
         payment.setTransferSum(BigDecimal.valueOf(1025.55));
 
@@ -132,14 +145,16 @@ public class PaymentControllerTest {
                 post("/broker/payment")
                         .content(json(payment))
                         .contentType(contentType))
-                    .andExpect(status().isCreated());
+                    .andExpect(status().isCreated())
+                    .andDo(resultHandler.document(requestFields(requestPaymentFields)))
+                    .andDo(resultHandler.document(responseFields(responsePaymentFields)));
     }
 
     @Test
     public void getPayment() throws Exception {
         Payment payment = payments.get(0);
 
-        assertEquals("224477887777", payment.getAccountNumber());
+        assertEquals("224477880000", payment.getAccountNumber());
         assertEquals("R.Abramovich", payment.getClientName());
         assertEquals(BigDecimal.valueOf(112233445566.77), payment.getTransferSum());
 
@@ -150,13 +165,21 @@ public class PaymentControllerTest {
                     .andExpect(jsonPath("$.id", is(payment.getId())))
                     .andExpect(jsonPath("$.accountNumber", is(payment.getAccountNumber())))
                     .andExpect(jsonPath("$.clientName", is(payment.getClientName())))
-                    .andDo(resultHandler.document(responseFields(paymentFields)));
+                    .andDo(resultHandler.document(responseFields(responsePaymentFields)));
     }
 
     @Test
     public void paymentNotFound() throws Exception {
         mockMvc.perform(get("/broker/payment/-1"))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void getPaymentsHistory() throws Exception {
+        mockMvc.perform(get("/broker/payment/"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$").isNotEmpty());
     }
 
     @SuppressWarnings("unchecked")

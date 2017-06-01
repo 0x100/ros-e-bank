@@ -6,22 +6,44 @@
 :toclevels: 4
 
 [[overview]]
-= Назначение микросервиса
+== Назначение микросервиса
+Брокер проведения (роутинга) платежей
 
-Брокер проведения платежей
+== Создание платежа
+Платеж в зависимости от типа в составе номера счета направляется брокером к разным
+микросервисам, например, если № счета заканчивается на 0000 - это будет внешний
+перевод, а 9999 - внутренний.
 
-[[resources]]
-= Ресурсы
+=== Запрос
+include::{snippets}/pay/request-fields.adoc[]
+include::{snippets}/pay/http-request.adoc[]
 
-[[resources-person]]
-== Payment (платеж)
+=== Ответ
+include::{snippets}/pay/response-fields.adoc[]
+include::{snippets}/pay/http-response.adoc[]
 
+== Получение данных платежа
 include::{snippets}/get-payment/response-fields.adoc[]
 
-==== Example request
+=== Запрос
+include::{snippets}/get-payment/http-request.adoc[]
 
-include::{snippets}/get-payment/httpie-request.adoc[]
-
-==== Example response
-
+=== Ответ
 include::{snippets}/get-payment/http-response.adoc[]
+
+== Загрузка истории платежей
+
+=== Запрос
+include::{snippets}/get-payments-history/http-request.adoc[]
+
+=== Ответ
+include::{snippets}/get-payments-history/http-response.adoc[]
+
+== Запрос данных несуществующего платежа
+include::{snippets}/get-payment/response-fields.adoc[]
+
+=== Запрос
+include::{snippets}/payment-not-found/http-request.adoc[]
+
+=== Ответ
+include::{snippets}/payment-not-found/http-response.adoc[]

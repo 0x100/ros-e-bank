@@ -103,12 +103,12 @@ public class FeignClientInterfaceGenerator {
     }
 
     private static <T> void checkClassPath(Class<T> clazz, ClassPool classPool) throws NotFoundException {
-        String className4Check = clazz.getName();
+        String classname = clazz.getName();
 
-        if(classPool.find(className4Check) == null) {
+        if(classPool.find(classname) == null) {
             classPool.appendClassPath("classes/");
 
-            if(classPool.find(className4Check) == null) {
+            if(classPool.find(classname) == null) {
                 URL[] urLs = ((URLClassLoader) (Thread.currentThread().getContextClassLoader())).getURLs();
                 List<String> paths = Arrays.stream(urLs).map(URL::getPath).collect(Collectors.toList());
                 classPool.appendPathList(StringUtils.join(paths, ';'));
