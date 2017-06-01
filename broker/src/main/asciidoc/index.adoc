@@ -10,7 +10,7 @@
 Брокер проведения (роутинга) платежей
 
 == Создание платежа
-Платеж в зависимости от типа в составе номера счета направляется брокером к разным
+Платеж в зависимости от типа в составе номера счета направляется Брокером к разным
 микросервисам, например, если № счета заканчивается на 0000 - это будет внешний
 перевод, а 9999 - внутренний.
 
@@ -21,6 +21,16 @@ include::{snippets}/pay/http-request.adoc[]
 === Ответ
 include::{snippets}/pay/response-fields.adoc[]
 include::{snippets}/pay/http-response.adoc[]
+
+== Создание платежа с некорректным типом
+Имеется ввиду, что в Брокере не зарегистрирован платежный сервис для обработки платежей такого типа.
+
+=== Запрос
+include::{snippets}/pay-with-wrong-payment-type/request-fields.adoc[]
+include::{snippets}/pay-with-wrong-payment-type/http-request.adoc[]
+
+=== Ответ
+include::{snippets}/pay-with-wrong-payment-type/http-response.adoc[]
 
 == Получение данных платежа
 include::{snippets}/get-payment/response-fields.adoc[]

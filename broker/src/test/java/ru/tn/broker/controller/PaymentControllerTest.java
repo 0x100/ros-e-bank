@@ -27,6 +27,7 @@ import ru.tn.broker.repository.PaymentRepository;
 import ru.tn.broker.service.PaymentServicesActuator;
 import ru.tn.gateway.publish.config.GatewayPublisherConfiguration;
 import ru.tn.model.Payment;
+import ru.tn.model.PaymentStatus;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -93,7 +94,7 @@ public class PaymentControllerTest {
             fieldWithPath("clientName").description("Имя получателя платежа"),
             fieldWithPath("accountNumber").description("Номер счета"),
             fieldWithPath("transferSum").description("Сумма платежа"),
-            fieldWithPath("status").description("Статус платежа")
+            fieldWithPath("status").description("Статус платежа " + Arrays.toString(PaymentStatus.values()))
     };
 
     @Autowired
@@ -123,12 +124,14 @@ public class PaymentControllerTest {
         payment.setAccountNumber("224477880000");
         payment.setClientName("R.Abramovich");
         payment.setTransferSum(BigDecimal.valueOf(112233445566.77));
+        payment.setStatus(PaymentStatus.PAID);
         payments.add(paymentRepository.save(payment));
 
         payment = new Payment();
         payment.setAccountNumber("114475769999");
         payment.setClientName("A.Ivanov");
         payment.setTransferSum(BigDecimal.valueOf(112233445566.77));
+        payment.setStatus(PaymentStatus.ERROR);
         payments.add(paymentRepository.save(payment));
 
         when(actuator.getPaymentClient(eq("0000"))).thenReturn(p -> new ResponseEntity<>(HttpStatus.CREATED));
@@ -148,6 +151,21 @@ public class PaymentControllerTest {
                     .andExpect(status().isCreated())
                     .andDo(resultHandler.document(requestFields(requestPaymentFields)))
                     .andDo(resultHandler.document(responseFields(responsePaymentFields)));
+    }
+
+    @Test
+    public void payWithWrongPaymentType() throws Exception {
+        Payment payment = new Payment();
+        payment.setAccountNumber("552233447777");
+        payment.setClientName("T.Pipetkin");
+        payment.setTransferSum(BigDecimal.valueOf(500));
+
+        mockMvc.perform(
+                post("/broker/payment")
+                        .content(json(payment))
+                        .contentType(contentType))
+                    .andExpect(status().isMethodNotAllowed())
+                    .andDo(resultHandler.document(requestFields(requestPaymentFields)));
     }
 
     @Test
