@@ -59,7 +59,7 @@ public class DocsController {
         }
 
         Map<String, String> services  = consulClient.getAgentServices().getValue().values().stream()
-                .filter(service -> hasText(service.getAddress()) && !service.getId().equals(appName))
+                .filter(service -> hasText(service.getAddress()) && !appName.equals(service.getId()))
                 .collect(toMap(Service::getService, service -> "http://" + service.getAddress() + ":" + service.getPort()));
 
         String serviceDiscoveryUrl = services.getOrDefault(SERVICE_DISCOVERY_ID, "");
