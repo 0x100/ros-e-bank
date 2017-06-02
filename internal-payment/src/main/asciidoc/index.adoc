@@ -1,4 +1,4 @@
-= External payment service
+= Internal payment service
 :doctype: book
 :icons: font
 :source-highlighter: highlightjs
@@ -8,7 +8,7 @@
 [[overview]]
 = Назначение микросервиса
 
-Сервис внешних платежей
+Сервис внутренних платежей
 
 == Создание платежа
 === Запрос
