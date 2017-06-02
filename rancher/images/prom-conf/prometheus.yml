@@ -41,9 +41,11 @@ scrape_configs:
   metrics_path: /prometheus
   consul_sd_configs:
   - server:   'consul.consul:8500'
-    services: ['internal-payment', 'external-payment', 'payment-broker', 'gateway', 'service-discovery']
-  
+
   relabel_configs:
+  - source_labels: ['__meta_consul_tags']
+    regex: '.*,(service),'
+    action: keep
   - source_labels: ['__meta_consul_service']
     regex:         '(.*)'
     target_label:  'service'
