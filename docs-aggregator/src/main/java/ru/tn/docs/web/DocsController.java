@@ -7,9 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
-import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -49,9 +48,9 @@ public class DocsController {
 
 
     @SneakyThrows
-    @RequestMapping(method = RequestMethod.GET, produces = MediaType.TEXT_HTML_VALUE)
+    @GetMapping(produces = MediaType.TEXT_HTML_VALUE)
     public String buildDocs(@RequestParam(required = false) Boolean rebuild) {
-        if(Boolean.TRUE.equals(rebuild)) {
+        if(!Boolean.TRUE.equals(rebuild)) {
             File file = new File(DOCS_FILE_PATH);
             if(file.exists()) {
                 return new String(Files.readAllBytes(Paths.get(file.getPath())));
@@ -59,7 +58,7 @@ public class DocsController {
         }
 
         Map<String, String> services  = consulClient.getAgentServices().getValue().values().stream()
-                .filter(service -> hasText(service.getAddress()) && !appName.equals(service.getId()))
+                .filter(service -> hasText(service.getAddress()) && !appName.equals(service.getService()))
                 .collect(toMap(Service::getService, service -> "http://" + service.getAddress() + ":" + service.getPort()));
 
         String serviceDiscoveryUrl = services.getOrDefault(SERVICE_DISCOVERY_ID, "");
