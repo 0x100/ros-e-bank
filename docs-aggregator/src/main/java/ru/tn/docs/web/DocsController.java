@@ -29,9 +29,10 @@ import static org.springframework.util.StringUtils.hasText;
 public class DocsController {
     private static final String DOCS_URI = "/docs/index.html";
     private static final String DOCS_ITEM_FORMAT = "<li><a href=\"{0}\" target=\"_blank\">{1}</a></li>";
-    public static final String DOCS_FILE_PATH = "./docs-aggregator/src/main/resources/docs.html";
+    private static final String DOCS_FILE_PATH = "./docs-aggregator/src/main/resources/docs.html";
 
     private static final String SERVICE_DISCOVERY_ID = "service-discovery";
+    private static final String GRAPH_SVG = "/microservice-graph.svg";
 
     private final ConsulClient consulClient;
 
@@ -69,7 +70,7 @@ public class DocsController {
                 .collect(joining());
 
         String template = new String(Files.readAllBytes(Paths.get(docsTemplate.getURI())));
-        String content = template.replace("${contourImgPath}", serviceDiscoveryUrl + "/microservice-graph.svg")
+        String content = template.replace("${contourImgPath}", serviceDiscoveryUrl + GRAPH_SVG)
                 .replace("${documentationLinks}", documentationContent);
 
         try (Writer w = Files.newBufferedWriter(Paths.get(DOCS_FILE_PATH))) {
