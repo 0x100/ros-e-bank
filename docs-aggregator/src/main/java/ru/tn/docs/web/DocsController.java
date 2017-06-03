@@ -32,7 +32,7 @@ import static org.springframework.util.StringUtils.hasText;
 public class DocsController {
     private static final String DOCS_URI = "/docs/index.html";
     private static final String DOCS_ITEM_FORMAT = "<li><a href=\"{0}\" target=\"_blank\">{1}</a></li>";
-    private static final String DOCS_FILE_PATH = "./docs-aggregator/src/main/resources/docs.html";
+    private static final String DOCS_FILE_PATH = "./docs.html";
 
     private static final String SERVICE_DISCOVERY_ID = "service-discovery";
     private static final String GRAPH_SVG = "/microservice-graph.svg";
@@ -53,8 +53,8 @@ public class DocsController {
 
     @SneakyThrows
     @GetMapping(produces = MediaType.TEXT_HTML_VALUE)
-    public String buildDocs(@RequestParam(required = false) Boolean rebuild) {
-        if(!Boolean.TRUE.equals(rebuild)) {
+    public String buildDocs(@RequestParam(required = false) Boolean cached) {
+        if(Boolean.TRUE.equals(cached)) {
             File file = new File(DOCS_FILE_PATH);
             if(file.exists()) {
                 return new String(Files.readAllBytes(Paths.get(file.getPath())));
