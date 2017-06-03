@@ -2,6 +2,7 @@ package ru.tn.docs.web;
 
 import com.ecwid.consul.v1.ConsulClient;
 import com.ecwid.consul.v1.agent.model.Service;
+import com.google.common.io.Resources;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
 import java.io.Writer;
+import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
@@ -69,7 +72,8 @@ public class DocsController {
                 .map(entry -> format(DOCS_ITEM_FORMAT, entry.getValue() + DOCS_URI, entry.getKey()))
                 .collect(joining());
 
-        String template = new String(Files.readAllBytes(Paths.get(docsTemplate.getFile().getAbsolutePath())));
+        URL resource = this.getClass().getResource("/docs.template");
+        String template =  Resources.toString(resource, Charset.forName("UTF-8"));
         String content = template.replace("${contourImgPath}", serviceDiscoveryUrl + GRAPH_SVG)
                 .replace("${documentationLinks}", documentationContent);
 
