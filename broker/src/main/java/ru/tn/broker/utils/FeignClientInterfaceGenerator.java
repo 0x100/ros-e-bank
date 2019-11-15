@@ -108,17 +108,10 @@ public class FeignClientInterfaceGenerator {
         if(classPool.find(classname) == null) {
             classPool.appendClassPath("classes/");
 
-            System.out.println("Debug info:");
-            System.out.println(classPool);
-
             if(classPool.find(classname) == null) {
                 URL[] urLs = ((URLClassLoader) (Thread.currentThread().getContextClassLoader())).getURLs();
                 List<String> paths = Arrays.stream(urLs).map(URL::getPath).collect(Collectors.toList());
                 classPool.appendPathList(StringUtils.join(paths, ';'));
-
-                for (String path : paths) {
-                    System.out.println(path);
-                }
             }
         }
     }
